@@ -6,45 +6,83 @@ from django.db import models
 class AppUser(AbstractUser):
 	email = models.EmailField(unique=True)
 
-	groups = models.ManyToManyField(
-		'auth.Group',
-		related_name='appuser_groups',
-		blank=True,
-		help_text='The groups this user belongs to.',
-		verbose_name='groups'
-	)
-	user_permissions = models.ManyToManyField(
-		'auth.Permission',
-		related_name='appuser_permissions',
-		blank=True,
-		help_text='Specific permissions for this user.',
-		verbose_name='user permissions'
-	)
+	# Eliminamos grupos y permisos
+	# username + email + password ya vienen de AbstractUser
+
+	def __str__(self):
+		return self.username
 
 class UserSession(models.Model):
-	user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+	user = models.OneToOneField(
+		'AppUser',  # cada usuario tiene solo una sesión
+		on_delete=models.CASCADE
+	)
 	token = models.CharField(max_length=64, unique=True, default=secrets.token_hex(16))
 	created_at = models.DateTimeField(auto_now_add=True)
 
-class FlavorProfile(models.Model):
+class Ingredient(models.Model):
+
+	name = models.CharField(max_length=100)
+
+	family = models.CharField(max_length=50)
+
+	def __str__(self):
+		return self.name
+
+
+class Flavour(models.Model):
+
 	name = models.CharField(max_length=50)
 
 	def __str__(self):
 		return self.name
 
-class Ingredient(models.Model):
-	name = models.CharField(max_length=100)
-	flavor_profiles = models.ManyToManyField(FlavorProfile, through='IngredientFlavor')
+
+class Aroma(models.Model):
+
+	name = models.CharField(max_length=50)
+
 	def __str__(self):
 		return self.name
 
-class IngredientFlavor(models.Model):
-	ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-	flavor = models.ForeignKey(FlavorProfile, on_delete=models.CASCADE)
-	intensity = models.IntegerField(default=5)
-	cooking_method = models.CharField(max_length=50, blank=True, null=True)
 
-class Pairing(models.Model):
-	ingredients = models.ManyToManyField(Ingredient)
-	score = models.IntegerField()
-	reason = models.TextField()
+class IngredientFlavourRelation(models.Model):
+
+	ingredient = models.ForeignKey(
+		Ingredient,
+		on_delete=models.CASCADE
+	)
+
+	flavour = models.ForeignKey(
+		Flavour,
+		on_delete=models.CASCADE
+	)
+
+	intensity = models.IntegerField()
+
+	class Meta:
+		unique_together = ("ingredient", "flavour")
+
+	def __str__(self):
+		return f"{self.ingredient.name} - {self.flavour.name} ({self.intensity})"
+
+
+class IngredientAromaRelation(models.Model):
+
+	ingredient = models.ForeignKey(
+		Ingredient,
+		on_delete=models.CASCADE
+	)
+
+	aroma = models.ForeignKey(
+		Aroma,
+		on_delete=models.CASCADE
+	)
+
+	intensity = models.IntegerField()
+
+	class Meta:
+		unique_together = ("ingredient", "aroma")
+
+	def __str__(self):
+		return f"{self.ingredient.name} - {self.aroma.name} ({self.intensity})"
