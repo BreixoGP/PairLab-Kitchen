@@ -1,4 +1,4 @@
-Food Pairing App
+Food Pairing App - Under development
 
 Project Type: Final Project – Multiplatform Application Design Course
 
