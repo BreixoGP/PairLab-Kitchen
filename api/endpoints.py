@@ -81,7 +81,7 @@ def logout(request):
 	if not user:
 		return JsonResponse({"error": "Unauthorized"}, status=401)
 
-	# 🔹 Borrar token actual
+	# Borrar token actual
 	UserSession.objects.filter(user=user).delete()
 
 	return JsonResponse({"message": "Logout successful"}, status=200)
@@ -147,6 +147,7 @@ def authenticate_request(request):
 	except UserSession.DoesNotExist:
 		return None
 
+
 @csrf_exempt
 def ingredient_families(request):
 	user = authenticate_request(request)
@@ -155,35 +156,43 @@ def ingredient_families(request):
 
 	families = Ingredient.objects.values_list("family", flat=True).distinct()
 	return JsonResponse({"families": list(families)}, status=200)
+
 @csrf_exempt
 def ingredients_list(request):
 	user = authenticate_request(request)
 	if not user:
 		return JsonResponse({"error": "Unauthorized"}, status=401)
 
-	if request.method == 'GET':
-		data = []
-		for ing in Ingredient.objects.all():
-			variants = get_ingredient_variants(ing)
-			data.append({
-				"id": ing.pk,
-				"name": ing.name,
-				"variants": variants
-			})
-		return JsonResponse({"ingredients": data}, status=200)
+	if request.method != 'GET':
+		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
 
-	elif request.method == 'POST':
-		if not user.is_superuser:
-			return JsonResponse({"error": "Forbidden"}, status=403)
-		body = json.loads(request.body)
-		name = body.get("name")
-		if not name:
-			return JsonResponse({"error": "Missing name"}, status=400)
-		ingredient = Ingredient.objects.create(name=name)
-		return JsonResponse({"id": ingredient.pk, "name": ingredient.name}, status=201)
+	# Query params opcionales
+	search_query = request.GET.get("search", None)   # filtrar por nombre
+	family_filter = request.GET.get("family", None)  # filtrar por familia
 
-	return JsonResponse({"error": "HTTP method not allowed"}, status=405)
+	ingredients_qs = Ingredient.objects.all()
 
+	# Filtrar por nombre si hay search
+	if search_query:
+		ingredients_qs = ingredients_qs.filter(name__icontains=search_query)
+
+	# Filtrar por familia si hay family
+	if family_filter:
+		# Permitir varias familias separadas por coma: ?family=fruit,vegetable
+		families = [f.strip() for f in family_filter.split(",")]
+		ingredients_qs = ingredients_qs.filter(family__in=families)
+
+	data = []
+	for ing in ingredients_qs:
+		variants = get_ingredient_variants(ing)
+		data.append({
+			"id": ing.pk,
+			"name": ing.name,
+			"family": ing.family,
+			"variants": variants
+		})
+
+	return JsonResponse({"ingredients": data}, status=200)
 
 @csrf_exempt
 def pairings_list(request):
@@ -199,25 +208,35 @@ def pairings_list(request):
 	except json.JSONDecodeError:
 		return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-	ingredient_ids = body.get("ingredient_ids", [])
+	ingredient_id = body.get("ingredient_id")
 	combo_size = body.get("combo_size", 1)
 	family_filter = body.get("family_filter", None)
 
-	if not ingredient_ids:
-		return JsonResponse({"error": "No ingredients provided"}, status=400)
+	if not ingredient_id:
+		return JsonResponse({"error": "No ingredient provided"}, status=400)
 
-	base_ingredient = Ingredient.objects.get(pk=ingredient_ids[0])
+	try:
+		base_ingredient = Ingredient.objects.get(pk=ingredient_id)
+	except Ingredient.DoesNotExist:
+		return JsonResponse({"error": "Ingredient not found"}, status=404)
+
 	candidates = get_candidates(base_ingredient, family_filter=family_filter)
 
 	combos = get_top_combos(base_ingredient, candidates, combo_size)
+
 	results = []
 
 	for combo in combos:
 		combo_data = [{"id": ing.pk, "name": ing.name} for ing in combo]
+
 		score = 1.0
 		for i, ing1 in enumerate(combo):
 			for ing2 in combo[i+1:]:
 				score *= score_pair(ing1, ing2)
-		results.append({"combo": combo_data, "score": score})
+
+		results.append({
+			"combo": combo_data,
+			"score": score
+		})
 
 	return JsonResponse({"results": results}, status=200)
