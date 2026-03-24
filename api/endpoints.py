@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from api.models import AppUser, UserSession, Ingredient
-from api.services import get_ingredient_variants, get_candidates, get_top_combos, score_pair
+from api.services import get_ingredient_profile, get_candidates, get_top_combos, score_pair
 
 
 @csrf_exempt
@@ -62,10 +62,8 @@ def login(request):
 	if not user.check_password(password):
 		return JsonResponse({"error": "Incorrect password"}, status=401)
 
-	# 🔹 Borrar token antiguo si existía
 	UserSession.objects.filter(user=user).delete()
 
-	# 🔹 Crear token nuevo
 	session = UserSession.objects.create(user=user)
 
 	return JsonResponse({
@@ -166,30 +164,30 @@ def ingredients_list(request):
 	if request.method != 'GET':
 		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
 
-	# Query params opcionales
-	search_query = request.GET.get("search", None)   # filtrar por nombre
-	family_filter = request.GET.get("family", None)  # filtrar por familia
+	# Query params
+	search_query = request.GET.get("search", None)
+	family_filter = request.GET.get("family", None)
 
 	ingredients_qs = Ingredient.objects.all()
 
-	# Filtrar por nombre si hay search
 	if search_query:
 		ingredients_qs = ingredients_qs.filter(name__icontains=search_query)
 
-	# Filtrar por familia si hay family
 	if family_filter:
-		# Permitir varias familias separadas por coma: ?family=fruit,vegetable
 		families = [f.strip() for f in family_filter.split(",")]
 		ingredients_qs = ingredients_qs.filter(family__in=families)
 
 	data = []
+
 	for ing in ingredients_qs:
-		variants = get_ingredient_variants(ing)
+		profile = get_ingredient_profile(ing)
+
 		data.append({
-			"id": ing.pk,
-			"name": ing.name,
-			"family": ing.family,
-			"variants": variants
+			"id": profile["id"],
+			"name": profile["name"],
+			"family": profile["family"],
+			"flavours": profile["flavours"],
+			"aromas": profile["aromas"]
 		})
 
 	return JsonResponse({"ingredients": data}, status=200)
@@ -220,14 +218,26 @@ def pairings_list(request):
 	except Ingredient.DoesNotExist:
 		return JsonResponse({"error": "Ingredient not found"}, status=404)
 
-	candidates = get_candidates(base_ingredient, family_filter=family_filter)
 
-	combos = get_top_combos(base_ingredient, candidates, combo_size)
+	base_profile = get_ingredient_profile(base_ingredient)
+
+	candidate_profiles = get_candidates(
+		base_ingredient,
+		family_filter=family_filter
+	)
+
+	combos = get_top_combos(base_profile, candidate_profiles, combo_size)
 
 	results = []
 
 	for combo in combos:
-		combo_data = [{"id": ing.pk, "name": ing.name} for ing in combo]
+		combo_data = [
+			{
+				"id": ing["id"],
+				"name": ing["name"]
+			}
+			for ing in combo
+		]
 
 		score = 1.0
 		for i, ing1 in enumerate(combo):

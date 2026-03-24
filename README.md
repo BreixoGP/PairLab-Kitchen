@@ -48,7 +48,7 @@ Tech Stack
 
 Backend: Django REST Framework, Python
 
-Frontend: Android (Kotlin or Java, depending on implementation)
+Frontend: Android 
 
 Database: SQLite / PostgreSQL (depending on deployment)
 
@@ -59,7 +59,6 @@ Clone the repository:
 git clone https://github.com/BreixoGP/FoodPairingApp.git
 
 Set up the Django backend and run migrations.
-
 Launch the Android app and connect to the backend API.
 
 Register a user, explore ingredients, and generate pairing suggestions.

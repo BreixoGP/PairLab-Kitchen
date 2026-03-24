@@ -4,36 +4,41 @@ from itertools import combinations
 from api.models import Ingredient, IngredientFlavourRelation, IngredientAromaRelation
 from api.compatibility import FLAVOUR_RULES, AROMA_RULES, FAMILY_RULES, FLAVOUR_AROMA_RULES
 
-# 🔹 Obtener el perfil de un ingrediente: sabores y aromas + intensidades
+
 def get_ingredient_profile(ingredient):
     """
-    Devuelve un diccionario con la lista de sabores y aromas del ingrediente.
-    Cada elemento incluye 'name' y 'intensity'.
-    Esto se puede cachear en la app para evitar múltiples queries.
+    Devuelve un perfil completo del ingrediente con:
+    - id, name, family
+    - flavours: [{name, intensity}]
+    - aromas: [{name, intensity}]
     """
+
     profile = {
+        "id": ingredient.id,
+        "name": ingredient.name,
+        "family": ingredient.family,
         "flavours": [],
-        "aromas": [],
-        "family": ingredient.family
+        "aromas": []
     }
 
-    # sabores
-    for rel in IngredientFlavourRelation.objects.filter(ingredient=ingredient):
+    flavour_relations = IngredientFlavourRelation.objects.filter(ingredient=ingredient)
+
+    for rel in flavour_relations:
         profile["flavours"].append({
-            "name": rel.flavour.name,
-            "intensity": rel.intensity
+            "name": rel.flavour.name.lower().strip(),  # ignora mayusculas Sweet=sweet
+            "intensity": rel.intensity or 0
         })
 
-    # aromas
-    for rel in IngredientAromaRelation.objects.filter(ingredient=ingredient):
+    aroma_relations = IngredientAromaRelation.objects.filter(ingredient=ingredient)
+
+    for rel in aroma_relations:
         profile["aromas"].append({
-            "name": rel.aroma.name,
-            "intensity": rel.intensity
+            "name": rel.aroma.name.lower().strip(),
+            "intensity": rel.intensity or 0
         })
 
     return profile
 
-# 🔹 Calcular compatibilidad entre dos perfiles de ingredientes
 def score_pair(profile1, profile2):
     """
     Calcula el score entre dos ingredientes usando:
@@ -45,7 +50,7 @@ def score_pair(profile1, profile2):
     """
     score = 1.0
 
-    # sabor ↔ sabor
+
     for f1 in profile1["flavours"]:
         for f2 in profile2["flavours"]:
             key = tuple(sorted((f1["name"], f2["name"])))
@@ -53,7 +58,7 @@ def score_pair(profile1, profile2):
             intensity_factor = 1 + (f1["intensity"] * f2["intensity"]) / 100
             score *= rule * intensity_factor
 
-    # aroma ↔ aroma
+ #promediar el score porque si no un ing con muchos sabores podria darme mas
     for a1 in profile1["aromas"]:
         for a2 in profile2["aromas"]:
             key = tuple(sorted((a1["name"], a2["name"])))
@@ -61,11 +66,11 @@ def score_pair(profile1, profile2):
             intensity_factor = 1 + (a1["intensity"] * a2["intensity"]) / 100
             score *= rule * intensity_factor
 
-    # familia ↔ familia
+
     key_family = tuple(sorted((profile1["family"], profile2["family"])))
     score *= FAMILY_RULES.get(key_family, 1.0)
 
-    # sabor ↔ aroma
+
     for f in profile1["flavours"]:
         for a in profile2["aromas"]:
             rule = FLAVOUR_AROMA_RULES.get((f["name"], a["name"]), 1.0)
@@ -80,7 +85,6 @@ def score_pair(profile1, profile2):
 
     return score
 
-# 🔹 Score de un combo de varios ingredientes
 def score_combo(profiles):
     """
     profiles: lista de perfiles de ingredientes
@@ -92,7 +96,6 @@ def score_combo(profiles):
             total_score *= score_pair(p1, p2)
     return total_score
 
-# 🔹 Generar combos válidos a partir de la lista de candidatos
 def generate_combos(base_profile, candidate_profiles, combo_size):
     """
     Combina candidatos de tamaño combo_size y añade el ingrediente base.
@@ -105,7 +108,6 @@ def generate_combos(base_profile, candidate_profiles, combo_size):
             combos.append(full_combo)
     return combos
 
-# 🔹 Obtener los top N combos ordenados por score
 def get_top_combos(base_profile, candidate_profiles, combo_size, top_n=20):
     """
     Devuelve los combos mejor puntuados.
@@ -121,7 +123,6 @@ def get_top_combos(base_profile, candidate_profiles, combo_size, top_n=20):
     scored_combos.sort(key=lambda x: x[1], reverse=True)
     return [c[0] for c in scored_combos[:top_n]]
 
-# 🔹 Obtener candidatos para un ingrediente base
 def get_candidates(base_ingredient, top_n_candidates=15, family_filter=None):
     """
     Devuelve los ingredientes candidatos ordenados por compatibilidad con el base.
@@ -130,7 +131,6 @@ def get_candidates(base_ingredient, top_n_candidates=15, family_filter=None):
     if family_filter:
         all_ingredients = all_ingredients.filter(family__in=family_filter)
 
-    # pre-cacheamos perfiles para no hacer queries repetidas
     base_profile = get_ingredient_profile(base_ingredient)
     candidate_profiles = [(ing, get_ingredient_profile(ing)) for ing in all_ingredients]
 
@@ -139,8 +139,6 @@ def get_candidates(base_ingredient, top_n_candidates=15, family_filter=None):
         pair_score = score_pair(base_profile, profile)
         scored.append((ing, profile, pair_score))
 
-    # ordenamos por score
     scored.sort(key=lambda x: x[2], reverse=True)
 
-    # devolvemos solo los perfiles
     return [p[1] for p in scored[:top_n_candidates]]
