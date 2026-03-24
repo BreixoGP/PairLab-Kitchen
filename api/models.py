@@ -47,42 +47,39 @@ class Aroma(models.Model):
 
 
 class IngredientFlavourRelation(models.Model):
-
 	ingredient = models.ForeignKey(
 		Ingredient,
 		on_delete=models.CASCADE
 	)
-
 	flavour = models.ForeignKey(
 		Flavour,
-		on_delete=models.CASCADE
+		on_delete=models.SET_NULL,  # no borrar la relación si se borra el flavour
+		null=True,
+		blank=True
 	)
-
 	intensity = models.IntegerField()
 
 	class Meta:
 		unique_together = ("ingredient", "flavour")
 
 	def __str__(self):
-		return f"{self.ingredient.name} - {self.flavour.name} ({self.intensity})"
-
+		return f"{self.ingredient.name} - {self.flavour.name if self.flavour else 'N/A'} ({self.intensity})"
 
 class IngredientAromaRelation(models.Model):
-
 	ingredient = models.ForeignKey(
 		Ingredient,
 		on_delete=models.CASCADE
 	)
-
 	aroma = models.ForeignKey(
 		Aroma,
-		on_delete=models.CASCADE
+		on_delete=models.SET_NULL,  # no borrar la relación si se borra el aroma
+		null=True,
+		blank=True
 	)
-
 	intensity = models.IntegerField()
 
 	class Meta:
 		unique_together = ("ingredient", "aroma")
 
 	def __str__(self):
-		return f"{self.ingredient.name} - {self.aroma.name} ({self.intensity})"
+		return f"{self.ingredient.name} - {self.aroma.name if self.aroma else 'N/A'} ({self.intensity})"

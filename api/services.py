@@ -41,86 +41,125 @@ def get_ingredient_profile(ingredient):
 
 def score_pair(profile1, profile2):
     """
-    Calcula el score entre dos ingredientes usando:
-    - FLAVOUR_RULES
-    - AROMA_RULES
-    - FAMILY_RULES
-    - FLAVOUR_AROMA_RULES
-    Multiplica la regla por la intensidad de cada sabor/aroma.
+    Calcula el score entre dos ingredientes de forma balanceada:
+    - Promedia los scores de sabor, aroma y familia
+    - Evita fallos si un ingrediente no tiene sabores o aromas
     """
-    score = 1.0
+    flavour_score = 1.0
+    aroma_score = 1.0
+    flavour_aroma_score = 1.0
+    family_score = 1.0
 
+    f1_list = profile1.get("flavours", [])
+    f2_list = profile2.get("flavours", [])
 
-    for f1 in profile1["flavours"]:
-        for f2 in profile2["flavours"]:
-            key = tuple(sorted((f1["name"], f2["name"])))
-            rule = FLAVOUR_RULES.get(key, 1.0)
-            intensity_factor = 1 + (f1["intensity"] * f2["intensity"]) / 100
-            score *= rule * intensity_factor
+    a1_list = profile1.get("aromas", [])
+    a2_list = profile2.get("aromas", [])
 
- #promediar el score porque si no un ing con muchos sabores podria darme mas
-    for a1 in profile1["aromas"]:
-        for a2 in profile2["aromas"]:
-            key = tuple(sorted((a1["name"], a2["name"])))
-            rule = AROMA_RULES.get(key, 1.0)
-            intensity_factor = 1 + (a1["intensity"] * a2["intensity"]) / 100
-            score *= rule * intensity_factor
+    # ------------------ FLAVOUR ------------------
+    if f1_list and f2_list:
+        total = 0
+        count = 0
+        for f1 in f1_list:
+            for f2 in f2_list:
+                key = tuple(sorted((f1["name"], f2["name"])))
+                rule = FLAVOUR_RULES.get(key, 1.0)
+                intensity_factor = 1 + (f1["intensity"] * f2["intensity"]) / 100
+                total += rule * intensity_factor
+                count += 1
+        flavour_score = total / count if count else 1.0
 
+    # ------------------ AROMA ------------------
+    if a1_list and a2_list:
+        total = 0
+        count = 0
+        for a1 in a1_list:
+            for a2 in a2_list:
+                key = tuple(sorted((a1["name"], a2["name"])))
+                rule = AROMA_RULES.get(key, 1.0)
+                intensity_factor = 1 + (a1["intensity"] * a2["intensity"]) / 100
+                total += rule * intensity_factor
+                count += 1
+        aroma_score = total / count if count else 1.0
 
-    key_family = tuple(sorted((profile1["family"], profile2["family"])))
-    score *= FAMILY_RULES.get(key_family, 1.0)
-
-
-    for f in profile1["flavours"]:
-        for a in profile2["aromas"]:
+    # ------------------ FLAVOUR x AROMA ------------------
+    total = 0
+    count = 0
+    for f in f1_list:
+        for a in a2_list:
             rule = FLAVOUR_AROMA_RULES.get((f["name"], a["name"]), 1.0)
             intensity_factor = 1 + (f["intensity"] * a["intensity"]) / 100
-            score *= rule * intensity_factor
-
-    for f in profile2["flavours"]:
-        for a in profile1["aromas"]:
+            total += rule * intensity_factor
+            count += 1
+    for f in f2_list:
+        for a in a1_list:
             rule = FLAVOUR_AROMA_RULES.get((f["name"], a["name"]), 1.0)
             intensity_factor = 1 + (f["intensity"] * a["intensity"]) / 100
-            score *= rule * intensity_factor
+            total += rule * intensity_factor
+            count += 1
+    flavour_aroma_score = total / count if count else 1.0
 
-    return score
+    # ------------------ FAMILY ------------------
+    key_family = tuple(sorted((profile1.get("family", ""), profile2.get("family", ""))))
+    family_score = FAMILY_RULES.get(key_family, 1.0)
+
+    # ------------------ SCORE FINAL ------------------
+    final_score = flavour_score * aroma_score * flavour_aroma_score * family_score
+    return final_score
+
 
 def score_combo(profiles):
     """
-    profiles: lista de perfiles de ingredientes
-    Calcula el score total del combo multiplicando todos los pares.
+    Calcula el score total de un combo promedioando los pares para evitar favorecer a ingredientes con muchos sabores/aromas.
     """
-    total_score = 1.0
+    if not profiles or len(profiles) < 2:
+        return 1.0
+
+    scores = []
     for i, p1 in enumerate(profiles):
         for p2 in profiles[i+1:]:
-            total_score *= score_pair(p1, p2)
-    return total_score
+            scores.append(score_pair(p1, p2))
+
+    # Promediar los scores de todos los pares
+    return sum(scores) / len(scores)
+
 
 def generate_combos(base_profile, candidate_profiles, combo_size):
     """
-    Combina candidatos de tamaño combo_size y añade el ingrediente base.
-    Solo se incluyen combos donde todos los pares tienen score > 0
+    Genera todos los combos posibles de tamaño `combo_size` añadiendo el ingrediente base.
+    Filtra combos donde al menos un par tenga score <= 0.
     """
     combos = []
     for combo in combinations(candidate_profiles, combo_size):
-        if all(score_pair(c1, c2) > 0 for c1, c2 in combinations(combo, 2)):
-            full_combo = [base_profile] + list(combo)
+        # Incluir el ingrediente base
+        full_combo = [base_profile] + list(combo)
+
+        # Calcular scores de pares y descartar si alguno <= 0
+        if all(score_pair(p1, p2) > 0 for i, p1 in enumerate(full_combo)
+               for p2 in full_combo[i+1:]):
             combos.append(full_combo)
+
     return combos
+
 
 def get_top_combos(base_profile, candidate_profiles, combo_size, top_n=20):
     """
-    Devuelve los combos mejor puntuados.
-    Para combo_size=1, combina solo base + 1 candidato.
+    Devuelve los combos mejor puntuados usando score promedio.
     """
     if combo_size == 1:
+        # Para combo_size=1, calcular score entre base y cada candidato
         scored = [(c, score_pair(base_profile, c)) for c in candidate_profiles]
         scored.sort(key=lambda x: x[1], reverse=True)
         return [[base_profile, s[0]] for s in scored[:top_n]]
 
+    # Generar combos de tamaño >1
     candidate_combos = generate_combos(base_profile, candidate_profiles, combo_size)
+
+    # Calcular score promedio de cada combo
     scored_combos = [(combo, score_combo(combo)) for combo in candidate_combos]
     scored_combos.sort(key=lambda x: x[1], reverse=True)
+
+    # Devolver solo las listas de perfiles (sin score)
     return [c[0] for c in scored_combos[:top_n]]
 
 def get_candidates(base_ingredient, top_n_candidates=15, family_filter=None):
