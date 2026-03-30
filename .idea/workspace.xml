@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ed39bbda-ba6b-4178-b33e-b94069a2a8a7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FoodPairingApp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FoodPairingApp.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.gitignore.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/FoodPairingApp.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/checks.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/finders.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/handlers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/management/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/management/commands/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/management/commands/findstatic.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/management/commands/runserver.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/storage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/testing.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/django/contrib/staticfiles/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/build_tracker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/metadata.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/metadata_editable.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/metadata_legacy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/wheel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/wheel_editable.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Lib/site-packages/pip/_internal/operations/build/wheel_legacy.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_asyncio.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_bz2.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_ctypes.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_ctypes_test.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_decimal.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_elementtree.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_hashlib.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_lzma.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_multiprocessing.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_overlapped.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_queue.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_remote_debugging.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_socket.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_sqlite3.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_ssl.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testbuffer.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testcapi.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testclinic.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testclinic_limited.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testconsole.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testimportmultiple.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testinternalcapi.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testlimitedcapi.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testmultiphase.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_testsinglephase.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_tkinter.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_uuid.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_wmi.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_zoneinfo.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/_zstd.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/pyexpat.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/select.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/unicodedata.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.venv/Scripts/winsound.pyd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/asgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/settings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/wsgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/compatibility.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/endpoints.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0002_delete_flavorprofile_alter_appuser_groups_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0003_alter_usersession_token.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0004_alter_ingredientaromarelation_aroma_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/services.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/db.sqlite3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/manage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;BreixoGP&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/BreixoGP/FoodPairingApp.git&quot;,
+    &quot;accountId&quot;: &quot;d49d4798-eb44-456f-87c2-946f9c59b011&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3BORvjEHVLpzOtmhMmfh1daQ9eZ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ed39bbda-ba6b-4178-b33e-b94069a2a8a7" name="Changes" comment="" />
+      <created>1774358366570</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1774358366570</updated>
+    </task>
+    <servers />
+  </component>
+</project>
