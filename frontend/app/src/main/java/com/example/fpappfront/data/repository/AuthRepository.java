@@ -1,7 +1,7 @@
 package com.example.fpappfront.data.repository;
 
-
 import com.example.fpappfront.data.model.LoginRequest;
+import com.example.fpappfront.data.model.LoginResponse;
 import com.example.fpappfront.data.model.RegisterRequest;
 import com.example.fpappfront.data.network.ApiService;
 import com.example.fpappfront.data.network.RetrofitClient;
@@ -18,13 +18,13 @@ public class AuthRepository {
         apiService = RetrofitClient.getClient().create(ApiService.class);
     }
 
-    // 🔐 LOGIN
-    public void login(LoginRequest request, AuthCallback callback) {
+    public void login(LoginRequest request, LoginCallback callback) {
 
-        apiService.login(request).enqueue(new Callback<>() {
+        apiService.login(request).enqueue(new Callback<LoginResponse>() {
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
@@ -33,19 +33,18 @@ public class AuthRepository {
             }
 
             @Override
-            public void onFailure(Call call, Throwable t) {
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });
     }
 
-    // 📝 REGISTER
-    public void register(RegisterRequest request, AuthCallbackVoid callback) {
+    public void register(RegisterRequest request, RegisterCallback callback) {
 
-        apiService.register(request).enqueue(new Callback<>() {
+        apiService.register(request).enqueue(new Callback<Void>() {
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
@@ -54,20 +53,18 @@ public class AuthRepository {
             }
 
             @Override
-            public void onFailure(Call call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 callback.onError(t.getMessage());
             }
         });
     }
 
-    // 🔧 CALLBACKS
-
-    public interface AuthCallback {
-        void onSuccess(Object response);
+    public interface LoginCallback {
+        void onSuccess(LoginResponse response);
         void onError(String error);
     }
 
-    public interface AuthCallbackVoid {
+    public interface RegisterCallback {
         void onSuccess();
         void onError(String error);
     }
