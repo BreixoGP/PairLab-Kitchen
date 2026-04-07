@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ed39bbda-ba6b-4178-b33e-b94069a2a8a7" name="Changes" comment="" />
+    <list default="true" id="ed39bbda-ba6b-4178-b33e-b94069a2a8a7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/home/HomeFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/utils/ViewUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/src/main/res/drawable/food.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_home.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/FoodPairingApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/FoodPairingApp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/backend/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/network/ApiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/network/ApiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/network/RetrofitClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/network/RetrofitClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/repository/AuthRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/data/repository/AuthRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/login/LoginFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/login/LoginFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/register/RegisterFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/register/RegisterFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/register/RegisterViewModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/auth/register/RegisterViewModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/launcher/LauncherFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/java/com/example/fpappfront/ui/launcher/LauncherFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_launcher.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_launcher.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_login.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_register.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/res/layout/fragment_register.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/res/navigation/root_nav.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/res/navigation/root_nav.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/src/main/res/values/strings.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

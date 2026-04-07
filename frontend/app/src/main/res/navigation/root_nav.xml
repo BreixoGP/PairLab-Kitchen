@@ -2,12 +2,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:startDestination="@id/launcherFragment">
 
-    <!-- LAUNCHER -->
     <fragment
         android:id="@+id/launcherFragment"
-        android:name="com.example.fpappfront.ui.launcher.LauncherFragment" />
+        android:name="com.example.fpappfront.ui.launcher.LauncherFragment">
 
-    <!-- LOGIN -->
+        <action
+            android:id="@+id/action_launcher_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/launcherFragment"
+            app:popUpToInclusive="true"/>
+
+        <action
+            android:id="@+id/action_launcher_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/launcherFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.fpappfront.ui.auth.login.LoginFragment">
@@ -22,8 +33,6 @@
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true"/>
     </fragment>
-
-    <!-- REGISTER -->
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.fpappfront.ui.auth.register.RegisterFragment">
@@ -35,8 +44,8 @@
             app:popUpToInclusive="true"/>
     </fragment>
 
-    <!-- HOME -->
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.fpappfront.ui.home.HomeFragment"/>
+
 </navigation>

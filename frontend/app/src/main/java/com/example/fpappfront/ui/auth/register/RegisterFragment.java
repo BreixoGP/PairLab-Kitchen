@@ -1,26 +1,26 @@
 package com.example.fpappfront.ui.auth.register;
-
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-
 import com.example.fpappfront.R;
 import com.example.fpappfront.data.model.RegisterRequest;
+import com.example.fpappfront.utils.ViewUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterFragment extends Fragment {
 
     private RegisterViewModel viewModel;
 
     private TextInputEditText etUsername, etEmail, etPassword, etConfirmPassword;
+    private TextInputLayout tilUsername, tilEmail, tilPassword, tilConfirmPassword;
+
     private MaterialButton btnRegister;
 
     public RegisterFragment() {
@@ -33,57 +33,93 @@ public class RegisterFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
+        initViews(view);
+        setupListeners(view);
+        observeViewModel(view);
+    }
+
+    private void initViews(View view) {
+
         etUsername = view.findViewById(R.id.etUsername);
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
         etConfirmPassword = view.findViewById(R.id.etConfirmPassword);
+
+        tilUsername = view.findViewById(R.id.tilUsername);
+        tilEmail = view.findViewById(R.id.tilEmail);
+        tilPassword = view.findViewById(R.id.tilPassword);
+        tilConfirmPassword = view.findViewById(R.id.tilConfirmPassword);
+
         btnRegister = view.findViewById(R.id.btnRegister);
+    }
+
+    private void setupListeners(View view) {
 
         btnRegister.setOnClickListener(v -> attemptRegister(view));
-
-        observeViewModel(view);
     }
 
     private void attemptRegister(View view) {
 
-        String username = etUsername.getText().toString();
+        String user = etUsername.getText().toString();
         String email = etEmail.getText().toString();
         String pass = etPassword.getText().toString();
         String confirm = etConfirmPassword.getText().toString();
 
-        // 🔥 VALIDACIÓN LOCAL
-        if (username.isEmpty() || email.isEmpty() || pass.isEmpty()) {
-            Snackbar.make(view, "Completa todos los campos", Snackbar.LENGTH_SHORT).show();
-            return;
+        ViewUtils.clearErrors(
+                tilUsername,
+                tilEmail,
+                tilPassword,
+                tilConfirmPassword
+        );
+
+        boolean valid = true;
+
+        if (user.isEmpty()) {
+            tilUsername.setError(getString(R.string.empty_fields));
+            valid = false;
+        }
+
+        if (email.isEmpty()) {
+            tilEmail.setError(getString(R.string.empty_fields));
+            valid = false;
+        }
+
+        if (pass.isEmpty()) {
+            tilPassword.setError(getString(R.string.empty_fields));
+            valid = false;
         }
 
         if (!pass.equals(confirm)) {
-            Snackbar.make(view, "Las contraseñas no coinciden", Snackbar.LENGTH_SHORT).show();
-            return;
+            tilPassword.setError(getString(R.string.password_mismatch));
+            tilConfirmPassword.setError(getString(R.string.password_mismatch));
+            valid = false;
         }
 
-        RegisterRequest request = new RegisterRequest(username, email, pass);
+        if (!valid) return;
+
+        ViewUtils.hideKeyboard(requireContext(), view);
+
+        RegisterRequest request = new RegisterRequest(user, email, pass);
+
         viewModel.register(request);
     }
 
     private void observeViewModel(View view) {
 
-        viewModel.getRegisterResult().observe(getViewLifecycleOwner(), response -> {
+        viewModel.getRegisterResult().observe(getViewLifecycleOwner(), res -> {
 
-            // 💾 guardar token (auto-login)
-            requireContext()
-                    .getSharedPreferences("auth", Context.MODE_PRIVATE)
-                    .edit()
-                    .putString("token", response.getToken())
-                    .apply();
-
-            Snackbar.make(view, "Registro correcto", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(
+                    view,
+                    getString(R.string.register_success),
+                    Snackbar.LENGTH_SHORT
+            ).show();
 
             Navigation.findNavController(view)
                     .navigate(R.id.action_register_to_login);
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), err -> {
+
             Snackbar.make(view, err, Snackbar.LENGTH_LONG).show();
         });
     }

@@ -1,25 +1,22 @@
 package com.example.fpappfront.ui.auth.register;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.fpappfront.data.model.RegisterRequest;
-import com.example.fpappfront.data.model.LoginResponse;
 import com.example.fpappfront.data.repository.AuthRepository;
 
 public class RegisterViewModel extends ViewModel {
 
     private AuthRepository repository;
 
-    private MutableLiveData<LoginResponse> registerResult = new MutableLiveData<>();
+    private MutableLiveData<Boolean> registerResult = new MutableLiveData<>();
     private MutableLiveData<String> error = new MutableLiveData<>();
 
     public RegisterViewModel() {
         repository = new AuthRepository();
     }
 
-    public LiveData<LoginResponse> getRegisterResult() {
+    public LiveData<Boolean> getRegisterResult() {
         return registerResult;
     }
 
@@ -33,9 +30,7 @@ public class RegisterViewModel extends ViewModel {
 
             @Override
             public void onSuccess() {
-                // 🔥 aquí asumimos auto-login simple (sin token real del backend)
-                LoginResponse fakeResponse = new LoginResponse();
-                registerResult.postValue(fakeResponse);
+                registerResult.postValue(true);
             }
 
             @Override

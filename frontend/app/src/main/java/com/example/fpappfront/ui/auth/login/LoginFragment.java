@@ -11,15 +11,19 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.fpappfront.R;
+import com.example.fpappfront.utils.ViewUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel viewModel;
 
     private TextInputEditText etUsername, etPassword;
+    private TextInputLayout tilUsername, tilPassword;
+
     private MaterialButton btnLogin, btnGoRegister;
 
     public LoginFragment() {
@@ -32,24 +36,56 @@ public class LoginFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
+        initViews(view);
+        setupListeners(view);
+        observeViewModel(view);
+    }
+
+    private void initViews(View view) {
         etUsername = view.findViewById(R.id.etUsername);
         etPassword = view.findViewById(R.id.etPassword);
+
+        tilUsername = view.findViewById(R.id.tilUsername);
+        tilPassword = view.findViewById(R.id.tilPassword);
+
         btnLogin = view.findViewById(R.id.btnLogin);
         btnGoRegister = view.findViewById(R.id.btnGoRegister);
+    }
 
-        btnLogin.setOnClickListener(v -> {
-            String user = etUsername.getText().toString();
-            String pass = etPassword.getText().toString();
+    private void setupListeners(View view) {
 
-            viewModel.login(user, pass);
-        });
+        btnLogin.setOnClickListener(v -> attemptLogin(view));
 
         btnGoRegister.setOnClickListener(v ->
                 Navigation.findNavController(view)
                         .navigate(R.id.action_login_to_register)
         );
+    }
 
-        observeViewModel(view);
+    private void attemptLogin(View view) {
+
+        String user = etUsername.getText().toString();
+        String pass = etPassword.getText().toString();
+
+        ViewUtils.clearErrors(tilUsername, tilPassword);
+
+        boolean valid = true;
+
+        if (user.isEmpty()) {
+            tilUsername.setError(getString(R.string.empty_fields));
+            valid = false;
+        }
+
+        if (pass.isEmpty()) {
+            tilPassword.setError(getString(R.string.empty_fields));
+            valid = false;
+        }
+
+        if (!valid) return;
+
+        ViewUtils.hideKeyboard(requireContext(), view);
+
+        viewModel.login(user, pass);
     }
 
     private void observeViewModel(View view) {
@@ -62,13 +98,18 @@ public class LoginFragment extends Fragment {
                     .putString("token", response.getToken())
                     .apply();
 
-            Snackbar.make(view, "Login correcto", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(
+                    view,
+                    getString(R.string.login_success),
+                    Snackbar.LENGTH_SHORT
+            ).show();
 
             Navigation.findNavController(view)
                     .navigate(R.id.action_login_to_home);
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), err -> {
+
             Snackbar.make(view, err, Snackbar.LENGTH_LONG).show();
         });
     }

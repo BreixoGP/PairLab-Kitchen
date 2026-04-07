@@ -1,5 +1,21 @@
 <resources>
-    <string name="app_name">FPappfront</string>
+
+    <string name="app_name">FPAppFront</string>
+
+    <!-- Auth -->
+    <string name="login_success">Login succes</string>
+    <string name="register_success">Register succes</string>
+    <string name="login_error">Login error</string>
+    <string name="register_error">Register error</string>
+    <string name="empty_fields">Complete all fields</string>
+    <string name="password_mismatch">Passwords don\'t match</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="email">Email</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

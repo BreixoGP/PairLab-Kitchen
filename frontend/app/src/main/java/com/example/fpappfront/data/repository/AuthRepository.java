@@ -6,6 +6,8 @@ import com.example.fpappfront.data.model.RegisterRequest;
 import com.example.fpappfront.data.network.ApiService;
 import com.example.fpappfront.data.network.RetrofitClient;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,11 +46,29 @@ public class AuthRepository {
         apiService.register(request).enqueue(new Callback<Void>() {
 
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call call, Response response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
                 } else {
-                    callback.onError("Register error: " + response.code());
+
+                    String errorMessage = "Error en registro";
+
+                    try {
+                        if (response.errorBody() != null) {
+
+                            String errorBody = response.errorBody().string();
+
+                            JSONObject json = new JSONObject(errorBody);
+
+                            if (json.has("error")) {
+                                errorMessage = json.getString("error");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    callback.onError(errorMessage);
                 }
             }
 
