@@ -1,66 +1,239 @@
 package com.example.fpappfront.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fpappfront.R;
+import com.example.fpappfront.data.cache.HomeCache;
+import com.example.fpappfront.data.model.Ingredient;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private HomeViewModel viewModel;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private AutoCompleteTextView actvIngredient, actvFamilies;
+    private ChipGroup chipGroupSize;
+    private RecyclerView recycler;
+    private ComboAdapter adapter;
+
+    private List<Ingredient> ingredientList = new ArrayList<>();
+
+    private int selectedIngredientId = -1;
+    private List<String> selectedFamilies = new ArrayList<>();
+
+    private String[] familiesArray;
+    private boolean[] checkedItems;
+
+    private String token;
 
     public HomeFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        super(R.layout.fragment_home);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        initViews(view);
+        initRecycler();
+        setupObservers();
+        setupUI(view);
+
+        token = requireActivity()
+                .getSharedPreferences("auth", Context.MODE_PRIVATE)
+                .getString("token", null);
+
+        viewModel.loadInitialData(requireContext(), token);
+    }
+
+    // ---------------- INIT ----------------
+
+    private void initViews(View view) {
+
+        actvIngredient = view.findViewById(R.id.actvIngredient);
+        actvFamilies = view.findViewById(R.id.actvFamilies);
+        chipGroupSize = view.findViewById(R.id.chipGroupSize);
+        recycler = view.findViewById(R.id.recyclerCombos);
+    }
+
+    private void initRecycler() {
+        adapter = new ComboAdapter();
+        recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler.setAdapter(adapter);
+    }
+
+    // ---------------- OBSERVERS ----------------
+
+    private void setupObservers() {
+
+        viewModel.getIngredients().observe(getViewLifecycleOwner(), list -> {
+
+            ingredientList = list;
+
+            List<String> names = new ArrayList<>();
+            for (Ingredient i : list) names.add(i.name);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_list_item_1,
+                    names
+            );
+
+            actvIngredient.setAdapter(adapter);
+
+            actvIngredient.setOnItemClickListener((parent, v, pos, id) -> {
+                selectedIngredientId = ingredientList.get(pos).id;
+            });
+        });
+
+        viewModel.getFamilies().observe(getViewLifecycleOwner(), list -> {
+
+            if (list == null) return;
+
+            familiesArray = list.toArray(new String[0]);
+            checkedItems = new boolean[list.size()];
+        });
+
+        viewModel.getCombos().observe(getViewLifecycleOwner(), list -> {
+            adapter.setData(list);
+        });
+    }
+
+    // ---------------- UI ----------------
+
+    private void setupUI(View view) {
+
+        actvFamilies.setOnClickListener(v -> showFamiliesDialog(view));
+
+        setupChipSizeSelection();
+
+        view.findViewById(R.id.btnSearch).setOnClickListener(v -> {
+
+            if (!validateInput(view)) return;
+
+            int size = getSelectedSize();
+
+            viewModel.loadCombos(
+                    token,
+                    selectedIngredientId,
+                    size,
+                    selectedFamilies
+            );
+        });
+
+        view.findViewById(R.id.btnRefresh).setOnClickListener(v -> {
+
+            HomeCache.clear(requireContext());
+
+            viewModel.loadInitialData(requireContext(), token);
+
+            resetState();
+        });
+    }
+
+    // ---------------- CHIP SIZE ----------------
+
+    private void setupChipSizeSelection() {
+
+        chipGroupSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            // no necesitamos guardar estado aquí si no quieres
+        });
+    }
+
+    private int getSelectedSize() {
+
+        int checkedId = chipGroupSize.getCheckedChipId();
+
+        if (checkedId == View.NO_ID) return -1;
+
+        Chip chip = chipGroupSize.findViewById(checkedId);
+
+        try {
+            return Integer.parseInt(chip.getText().toString());
+        } catch (Exception e) {
+            return -1;
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+    // ---------------- VALIDATION ----------------
+
+    private boolean validateInput(View view) {
+
+        if (selectedIngredientId == -1) {
+            showError(view, "Select an ingredient");
+            return false;
+        }
+
+        int size = getSelectedSize();
+
+        if (size < 1 || size > 4) {
+            showError(view, "Select combo size");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void showError(View view, String msg) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
+    }
+
+    // ---------------- FAMILIES DIALOG ----------------
+
+    private void showFamiliesDialog(View view) {
+
+        if (familiesArray == null || familiesArray.length == 0) {
+            showError(view, "Families not loaded yet");
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select families");
+
+        builder.setMultiChoiceItems(familiesArray, checkedItems, (dialog, which, isChecked) -> {
+
+            if (isChecked) selectedFamilies.add(familiesArray[which]);
+            else selectedFamilies.remove(familiesArray[which]);
+        });
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            actvFamilies.setText(TextUtils.join(", ", selectedFamilies));
+        });
+
+        builder.show();
+    }
+
+    // ---------------- RESET ----------------
+
+    private void resetState() {
+
+        selectedIngredientId = -1;
+        selectedFamilies.clear();
+
+        actvIngredient.setText("");
+        actvFamilies.setText("");
+
+        chipGroupSize.clearCheck();
+
+        adapter.setData(new ArrayList<>());
     }
 }
