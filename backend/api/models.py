@@ -12,12 +12,12 @@ class AppUser(AbstractUser):
 	def __str__(self):
 		return self.username
 
+def generate_token():
+	return secrets.token_hex(16)
+
 class UserSession(models.Model):
-	user = models.OneToOneField(
-		'AppUser',  # cada usuario tiene solo una sesión
-		on_delete=models.CASCADE
-	)
-	token = models.CharField(max_length=64, unique=True, default=secrets.token_hex(16))
+	user = models.OneToOneField('AppUser', on_delete=models.CASCADE)
+	token = models.CharField(max_length=64, unique=True, default=generate_token)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 class Ingredient(models.Model):
