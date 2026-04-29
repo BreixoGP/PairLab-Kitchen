@@ -46,6 +46,10 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.fpappfront.ui.home.HomeFragment"/>
+        android:name="com.example.fpappfront.ui.home.HomeFragment" />
+
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.fpappfront.ui.user.UserFragment" />
 
 </navigation>
