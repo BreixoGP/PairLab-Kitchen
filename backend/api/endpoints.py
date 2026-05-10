@@ -79,7 +79,6 @@ def logout(request):
 	if not user:
 		return JsonResponse({"error": "Unauthorized"}, status=401)
 
-	# Borrar token actual
 	UserSession.objects.filter(user=user).delete()
 
 	return JsonResponse({"message": "Logout successful"}, status=200)
@@ -164,7 +163,6 @@ def ingredients_list(request):
 	if request.method != 'GET':
 		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
 
-	# Query params
 	search_query = request.GET.get("search", None)
 	family_filter = request.GET.get("family", None)
 
