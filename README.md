@@ -1,4 +1,4 @@
-# Food Pairing App — Under Development
+# PairLab Kitchen — Under Development
 Food Pairing App is a mobile application developed as a final project for my studies in Multiplatform Application Design.
 
 The main idea behind the project is to help users discover ingredient combinations based on flavour compatibility, aromas and ingredient families. The system generates pairing suggestions using a custom scoring algorithm built on top of predefined compatibility rules.
