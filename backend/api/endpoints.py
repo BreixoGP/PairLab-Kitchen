@@ -7,7 +7,9 @@ from api.services import get_ingredient_profile, get_candidates, get_top_combos,
 
 
 @csrf_exempt
+@csrf_exempt
 def register(request):
+
 	if request.method != 'POST':
 		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
 
@@ -16,26 +18,41 @@ def register(request):
 	except json.JSONDecodeError:
 		return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-	username = body.get("username")
-	email = body.get("email")
-	password = body.get("password")
+	username = body.get("username", "").strip()
+	email = body.get("email", "").strip()
+	password = body.get("password", "").strip()
 
-	if not username or not password or not email:
+	if not username or not email or not password:
 		return JsonResponse({"error": "Missing fields"}, status=400)
+
+	if len(username) < 3:
+		return JsonResponse({"error": "Username too short"}, status=400)
+
+	if len(username) > 30:
+		return JsonResponse({"error": "Username too long"}, status=400)
+
+	if "@" not in email:
+		return JsonResponse({"error": "Invalid Email"}, status=400)
+
+	if len(password) < 4:
+		return JsonResponse({"error": "Password too short"}, status=400)
 
 	if AppUser.objects.filter(username=username).exists():
 		return JsonResponse({"error": "Username already exists"}, status=409)
+
 	if AppUser.objects.filter(email=email).exists():
 		return JsonResponse({"error": "Email already in use"}, status=409)
 
-	user = AppUser(username=username, email=email)
-	user.set_password(password)  # password salted & hashed
+	user = AppUser(
+		username=username,
+		email=email
+	)
+
+	user.set_password(password)
 	user.save()
 
 	return JsonResponse({
-		"message": "User created successfully",
-		"user_id": user.pk,
-		"username": user.username
+		"message": "User created successfully"
 	}, status=201)
 
 @csrf_exempt
@@ -84,7 +101,9 @@ def logout(request):
 	return JsonResponse({"message": "Logout successful"}, status=200)
 @csrf_exempt
 def user_detail(request, id):
+
 	user = authenticate_request(request)
+
 	if not user:
 		return JsonResponse({"error": "Unauthorized"}, status=401)
 
@@ -93,45 +112,88 @@ def user_detail(request, id):
 
 	if request.method == 'GET':
 		return JsonResponse({
-			"id": user.pk,
 			"username": user.username,
 			"email": user.email
 		}, status=200)
 
 	elif request.method == 'PUT':
+
 		try:
 			body = json.loads(request.body)
 		except json.JSONDecodeError:
 			return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-		username = body.get("username")
-		email = body.get("email")
-		password = body.get("password")
+		if not body:
+			return JsonResponse({"message": "No changes detected"}, status=200)
 
-		if username:
-			if AppUser.objects.filter(username=username).exclude(pk=user.pk).exists():
-				return JsonResponse({"error": "Username already exists"}, status=409)
-			user.username = username
+		changed = False
 
-		if email:
-			if AppUser.objects.filter(email=email).exclude(pk=user.pk).exists():
-				return JsonResponse({"error": "Email already in use"}, status=409)
-			user.email = email
+		username = body.get("username", None)
+		email = body.get("email", None)
+		old_password = body.get("old_password", None)
+		new_password = body.get("new_password", None)
 
-		if password:
-			user.password = make_password(password)
+		if username is not None:
+			username = username.strip()
+
+			if username:
+				if len(username) > 150:
+					return JsonResponse({"error": "Username too long"}, status=400)
+
+				if AppUser.objects.filter(username=username).exclude(pk=user.pk).exists():
+					return JsonResponse({"error": "Username already exists"}, status=409)
+
+				if username != user.username:
+					user.username = username
+					changed = True
+
+		if email is not None:
+			email = email.strip()
+
+			if email:
+				if AppUser.objects.filter(email=email).exclude(pk=user.pk).exists():
+					return JsonResponse({"error": "Email already in use"}, status=409)
+
+				if email != user.email:
+					user.email = email
+					changed = True
+
+		if old_password is not None or new_password is not None:
+
+			if not old_password or not new_password:
+				return JsonResponse({"error": "Both old_password and new_password are required"}, status=400)
+
+			old_password = old_password.strip()
+			new_password = new_password.strip()
+
+			if not old_password or not new_password:
+				return JsonResponse({"error": "Password fields cannot be empty"}, status=400)
+
+			if not user.check_password(old_password):
+				return JsonResponse({"error": "Incorrect current password"}, status=401)
+
+			if len(new_password) < 4:
+				return JsonResponse({"error": "Password too short"}, status=400)
+
+			user.set_password(new_password)
+			changed = True
+
+		if not changed:
+			return JsonResponse({"message": "No changes detected"}, status=200)
 
 		user.save()
+
 		return JsonResponse({"message": "User updated successfully"}, status=200)
 
 	elif request.method == 'DELETE':
+
 		user.delete()
+
 		return JsonResponse({"message": "User deleted successfully"}, status=200)
 
 	else:
+
 		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
-
-
 def authenticate_request(request):
 	auth_header = request.headers.get("Authorization")
 	if not auth_header or not auth_header.startswith("Token "):

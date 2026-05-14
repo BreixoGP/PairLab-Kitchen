@@ -6,7 +6,6 @@ from django.db import models
 class AppUser(AbstractUser):
 	email = models.EmailField(unique=True)
 
-	# Eliminamos grupos y permisos
 	# username + email + password ya vienen de AbstractUser
 
 	def __str__(self):
@@ -53,7 +52,7 @@ class IngredientFlavourRelation(models.Model):
 	)
 	flavour = models.ForeignKey(
 		Flavour,
-		on_delete=models.SET_NULL,  # no borrar la relación si se borra el flavour
+		on_delete=models.SET_NULL,
 		null=True,
 		blank=True
 	)
@@ -72,7 +71,7 @@ class IngredientAromaRelation(models.Model):
 	)
 	aroma = models.ForeignKey(
 		Aroma,
-		on_delete=models.SET_NULL,  # no borrar la relación si se borra el aroma
+		on_delete=models.SET_NULL,
 		null=True,
 		blank=True
 	)

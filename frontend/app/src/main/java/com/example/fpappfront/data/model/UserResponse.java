@@ -1,6 +1,6 @@
 package com.example.fpappfront.data.model;
 
-public class User {
+public class UserResponse {
 
     public int id;
     public String username;
