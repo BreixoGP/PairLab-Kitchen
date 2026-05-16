@@ -35,7 +35,7 @@ def register(request):
 		return JsonResponse({"error": "Invalid Email"}, status=400)
 
 	if len(password) < 4:
-		return JsonResponse({"error": "Password too short"}, status=400)
+		return JsonResponse({"error": "Password must be at least 4 characters"}, status=400)
 
 	if AppUser.objects.filter(username=username).exists():
 		return JsonResponse({"error": "Username already exists"}, status=409)
@@ -170,10 +170,10 @@ def user_detail(request, id):
 				return JsonResponse({"error": "Password fields cannot be empty"}, status=400)
 
 			if not user.check_password(old_password):
-				return JsonResponse({"error": "Incorrect current password"}, status=401)
+				return JsonResponse({"error": "Incorrect password"}, status=401)
 
 			if len(new_password) < 4:
-				return JsonResponse({"error": "Password too short"}, status=400)
+				return JsonResponse({"error": "Password must be at least 4 characters"}, status=400)
 
 			user.set_password(new_password)
 			changed = True
