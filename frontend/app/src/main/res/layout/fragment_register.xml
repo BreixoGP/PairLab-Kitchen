@@ -14,10 +14,8 @@
         android:gravity="center_vertical"
         android:padding="24dp">
 
-        <!-- HEADER -->
         <include layout="@layout/view_header"/>
 
-        <!-- EMAIL -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -37,7 +35,6 @@
                 android:inputType="textEmailAddress"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- USERNAME -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilUsername"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -57,7 +54,6 @@
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- PASSWORD -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -79,7 +75,6 @@
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- CONFIRM PASSWORD -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilConfirmPassword"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -101,7 +96,6 @@
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- REGISTER BUTTON -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
@@ -109,7 +103,6 @@
             android:layout_marginTop="28dp"
             android:text="@string/register"/>
 
-        <!-- BACK -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBackToLogin"
             style="@style/Widget.Material3.Button.TextButton"

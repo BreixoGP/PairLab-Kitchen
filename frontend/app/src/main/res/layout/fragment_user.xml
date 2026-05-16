@@ -13,10 +13,8 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- HEADER -->
         <include layout="@layout/view_header"/>
 
-        <!-- USERNAME -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvUsername"
             android:layout_width="match_parent"
@@ -72,7 +70,6 @@
                 android:text="Cancel"/>
         </LinearLayout>
 
-        <!-- EMAIL -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvEmail"
             android:layout_width="match_parent"
@@ -130,7 +127,6 @@
                 android:text="Cancel"/>
         </LinearLayout>
 
-        <!-- PASSWORD -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnChangePassword"
             android:layout_width="match_parent"
@@ -221,23 +217,23 @@
                 android:text="Cancel"/>
         </LinearLayout>
 
-        <!-- LOGOUT -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Logout"/>
 
-        <!-- DELETE -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteAccount"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Delete account"/>
+            android:text="Delete account"
+            android:textColor="?attr/colorOnErrorContainer"  app:backgroundTint="?attr/colorErrorContainer"
+            app:iconTint="?attr/colorOnErrorContainer"/>
 
     </LinearLayout>
 

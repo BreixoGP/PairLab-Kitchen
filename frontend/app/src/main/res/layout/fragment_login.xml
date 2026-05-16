@@ -14,10 +14,8 @@
         android:gravity="center_vertical"
         android:padding="24dp">
 
-        <!-- HEADER -->
         <include layout="@layout/view_header"/>
 
-        <!-- USERNAME -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilUsername"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -36,7 +34,6 @@
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- PASSWORD -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
@@ -58,7 +55,6 @@
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- LOGIN BUTTON -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
@@ -66,7 +62,6 @@
             android:layout_marginTop="28dp"
             android:text="@string/login"/>
 
-        <!-- GO REGISTER -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGoRegister"
             style="@style/Widget.Material3.Button.TextButton"

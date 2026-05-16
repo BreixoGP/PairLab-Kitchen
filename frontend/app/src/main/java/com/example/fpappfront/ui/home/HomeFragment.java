@@ -97,9 +97,27 @@ public class HomeFragment extends Fragment {
             );
 
             actvIngredient.setAdapter(adapter);
+            actvIngredient.setThreshold(0);
+            actvIngredient.setOnClickListener(v -> {
+                if (!actvIngredient.isPopupShowing()) {
+                    actvIngredient.showDropDown();
+                }
+            });
+
+            actvIngredient.setOnFocusChangeListener((v, hasFocus) -> {
+                if (hasFocus && !actvIngredient.isPopupShowing()) {
+                    actvIngredient.showDropDown();
+                }
+            });
 
             actvIngredient.setOnItemClickListener((parent, v, pos, id) -> {
-                selectedIngredientId = ingredientList.get(pos).id;
+                String selectedName = (String) parent.getItemAtPosition(pos);
+                for (Ingredient i : ingredientList) {
+                    if (i.name.equals(selectedName)) {
+                        selectedIngredientId = i.id;
+                        break;
+                    }
+                }
             });
         });
 

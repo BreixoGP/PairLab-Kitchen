@@ -3,6 +3,7 @@ package com.example.fpappfront.ui.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView; // Importante añadir el import
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,7 +45,15 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
         }
 
         holder.tvCombo.setText(comboText.toString());
-        holder.tvScore.setText("Score: " + combo.score);
+
+        // Retocado: Dejamos solo el número para que luzca limpio en el badge flotante
+        holder.tvScore.setText(String.valueOf(combo.score));
+
+        // PREPARADO: El efecto clic ya se dibuja solo gracias al XML,
+        // pero aquí es donde capturarás la acción para abrir el BottomSheet en el futuro.
+        holder.itemView.setOnClickListener(v -> {
+            // Log.d("ComboClick", "Pulsado combo: " + comboText.toString());
+        });
     }
 
     @Override
@@ -56,11 +65,13 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
 
         TextView tvCombo;
         TextView tvScore;
+        ImageView ivComboIcon;
 
         public ComboViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCombo = itemView.findViewById(R.id.tvCombo);
             tvScore = itemView.findViewById(R.id.tvScore);
+            ivComboIcon = itemView.findViewById(R.id.ivComboIcon); // Enlazado
         }
     }
 }
