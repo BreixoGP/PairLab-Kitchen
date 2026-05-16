@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.fpappfront.R;
 import com.example.fpappfront.data.cache.HomeCache;
 import com.example.fpappfront.data.model.Ingredient;
+import com.example.fpappfront.utils.ViewUtils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
@@ -65,8 +66,6 @@ public class HomeFragment extends Fragment {
         viewModel.loadInitialData(requireContext(), token);
     }
 
-    // ---------------- INIT ----------------
-
     private void initViews(View view) {
 
         actvIngredient = view.findViewById(R.id.actvIngredient);
@@ -81,7 +80,6 @@ public class HomeFragment extends Fragment {
         recycler.setAdapter(adapter);
     }
 
-    // ---------------- OBSERVERS ----------------
 
     private void setupObservers() {
 
@@ -118,7 +116,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // ---------------- UI ----------------
 
     private void setupUI(View view) {
 
@@ -127,6 +124,8 @@ public class HomeFragment extends Fragment {
         setupChipSizeSelection();
 
         view.findViewById(R.id.btnSearch).setOnClickListener(v -> {
+
+            ViewUtils.hideKeyboard(requireContext(), view);
 
             if (!validateInput(view)) return;
 
@@ -142,6 +141,8 @@ public class HomeFragment extends Fragment {
 
         view.findViewById(R.id.btnRefresh).setOnClickListener(v -> {
 
+            ViewUtils.hideKeyboard(requireContext(), view);
+
             HomeCache.clear(requireContext());
 
             viewModel.loadInitialData(requireContext(), token);
@@ -150,7 +151,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // ---------------- CHIP SIZE ----------------
 
     private void setupChipSizeSelection() {
 
@@ -174,8 +174,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // ---------------- VALIDATION ----------------
-
     private boolean validateInput(View view) {
 
         if (selectedIngredientId == -1) {
@@ -197,7 +195,6 @@ public class HomeFragment extends Fragment {
         Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
     }
 
-    // ---------------- FAMILIES DIALOG ----------------
 
     private void showFamiliesDialog(View view) {
 
@@ -222,7 +219,6 @@ public class HomeFragment extends Fragment {
         builder.show();
     }
 
-    // ---------------- RESET ----------------
 
     private void resetState() {
 

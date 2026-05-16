@@ -45,14 +45,10 @@ public class HomeViewModel extends ViewModel {
         return combos;
     }
 
-    // ---------------- INIT ----------------
-
     public void loadInitialData(Context context, String token) {
         loadIngredients(context, token);
         loadFamilies(context, token);
     }
-
-    // ---------------- INGREDIENTS ----------------
 
     private void loadIngredients(Context context, String token) {
 
@@ -83,8 +79,6 @@ public class HomeViewModel extends ViewModel {
                 });
     }
 
-    // ---------------- FAMILIES ----------------
-
     private void loadFamilies(Context context, String token) {
 
         List<String> cached = HomeCache.getFamilies(context);
@@ -113,8 +107,6 @@ public class HomeViewModel extends ViewModel {
                     public void onFailure(Call<FamiliesResponse> call, Throwable t) {}
                 });
     }
-
-    // ---------------- COMBOS ----------------
 
     public void loadCombos(String token,
                            int ingredientId,

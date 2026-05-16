@@ -29,14 +29,31 @@ public class AuthRepository {
 
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
-                } else {
-                    callback.onError("Login error: " + response.code());
+                    return;
+                }
+
+                try {
+                    String errorBody = response.errorBody() != null
+                            ? response.errorBody().string()
+                            : null;
+
+                    String message = "Unknown error";
+
+                    if (errorBody != null) {
+                        JSONObject json = new JSONObject(errorBody);
+                        message = json.optString("error", json.optString("message", message));
+                    }
+
+                    callback.onError(message);
+
+                } catch (Exception e) {
+                    callback.onError("Server error");
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                callback.onError(t.getMessage());
+                callback.onError("Network error: " + t.getMessage());
             }
         });
     }
@@ -46,29 +63,23 @@ public class AuthRepository {
         apiService.register(request).enqueue(new Callback<Void>() {
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
                 if (response.isSuccessful()) {
                     callback.onSuccess();
-                } else {
+                    return;
+                }
 
-                    String errorMessage = "Error en registro";
+                try {
+                    String errorBody = response.errorBody().string();
+                    JSONObject json = new JSONObject(errorBody);
 
-                    try {
-                        if (response.errorBody() != null) {
+                    String error = json.optString("error", "Unknown error");
 
-                            String errorBody = response.errorBody().string();
+                    callback.onError(error);
 
-                            JSONObject json = new JSONObject(errorBody);
-
-                            if (json.has("error")) {
-                                errorMessage = json.getString("error");
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    callback.onError(errorMessage);
+                } catch (Exception e) {
+                    callback.onError("Server error");
                 }
             }
 

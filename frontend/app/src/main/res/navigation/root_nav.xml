@@ -51,5 +51,9 @@
     <fragment
         android:id="@+id/userFragment"
         android:name="com.example.fpappfront.ui.user.UserFragment" />
-
+    <action
+        android:id="@+id/action_user_to_login"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/userFragment"
+        app:popUpToInclusive="true"/>
 </navigation>

@@ -21,7 +21,8 @@ public class RegisterFragment extends Fragment {
     private TextInputEditText etUsername, etEmail, etPassword, etConfirmPassword;
     private TextInputLayout tilUsername, tilEmail, tilPassword, tilConfirmPassword;
 
-    private MaterialButton btnRegister;
+    private MaterialButton btnRegister, btnBackToLogin;
+
 
     public RegisterFragment() {
         super(R.layout.fragment_register);
@@ -51,11 +52,26 @@ public class RegisterFragment extends Fragment {
         tilConfirmPassword = view.findViewById(R.id.tilConfirmPassword);
 
         btnRegister = view.findViewById(R.id.btnRegister);
+        btnBackToLogin = view.findViewById(R.id.btnBackToLogin);
     }
 
     private void setupListeners(View view) {
 
         btnRegister.setOnClickListener(v -> attemptRegister(view));
+        btnBackToLogin.setOnClickListener(v ->
+                Navigation.findNavController(view)
+                        .navigate(R.id.action_register_to_login)
+        );
+        etEmail.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) tilEmail.setError(null);
+        });
+        etUsername.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) tilUsername.setError(null);
+        });
+
+        etPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) tilPassword.setError(null);
+        });
     }
 
     private void attemptRegister(View view) {
@@ -119,6 +135,24 @@ public class RegisterFragment extends Fragment {
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), err -> {
+
+            if (err == null) return;
+
+            if (err.toLowerCase().contains("username")) {
+                tilUsername.setError(err);
+                return;
+            }
+
+            if (err.toLowerCase().contains("email")) {
+                tilEmail.setError(err);
+                return;
+            }
+
+            if (err.toLowerCase().contains("password")) {
+                tilPassword.setError(err);
+                tilConfirmPassword.setError(err);
+                return;
+            }
 
             Snackbar.make(view, err, Snackbar.LENGTH_LONG).show();
         });

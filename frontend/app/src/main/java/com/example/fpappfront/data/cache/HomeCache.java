@@ -39,7 +39,7 @@ public class HomeCache {
         long now = System.currentTimeMillis();
 
         if (now - savedTime > TTL) {
-            return null; // expirado → forzar API
+            return null;
         }
 
         String json = prefs.getString(KEY_FAMILIES, null);

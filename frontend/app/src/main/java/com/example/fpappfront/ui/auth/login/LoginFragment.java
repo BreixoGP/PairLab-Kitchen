@@ -60,7 +60,16 @@ public class LoginFragment extends Fragment {
         btnGoRegister.setOnClickListener(v ->
                 Navigation.findNavController(view)
                         .navigate(R.id.action_login_to_register)
+
         );
+
+        etUsername.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) tilUsername.setError(null);
+        });
+
+        etPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) tilPassword.setError(null);
+        });
     }
 
     private void attemptLogin(View view) {
@@ -97,6 +106,7 @@ public class LoginFragment extends Fragment {
                     .getSharedPreferences("auth", Context.MODE_PRIVATE)
                     .edit()
                     .putString("token", response.getToken())
+                    .putInt("user_id", response.getUserId())
                     .apply();
 
             Snackbar.make(
@@ -111,7 +121,15 @@ public class LoginFragment extends Fragment {
 
         viewModel.getError().observe(getViewLifecycleOwner(), err -> {
 
-            Snackbar.make(view, err, Snackbar.LENGTH_LONG).show();
+            if (err.toLowerCase().contains("user")) {
+                tilUsername.setError(err);
+
+            } else if (err.toLowerCase().contains("password")) {
+                tilPassword.setError(err);
+
+            } else {
+                Snackbar.make(requireView(), err, Snackbar.LENGTH_LONG).show();
+            }
         });
     }
 }
