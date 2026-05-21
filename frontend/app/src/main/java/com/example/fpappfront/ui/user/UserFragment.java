@@ -1,7 +1,6 @@
 package com.example.fpappfront.ui.user;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;

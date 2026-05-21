@@ -59,6 +59,7 @@ public class HomeCache {
                 .putLong(KEY_INGREDIENTS_TIME, System.currentTimeMillis())
                 .apply();
     }
+
     public static List<Ingredient> getIngredients(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
 
@@ -74,6 +75,20 @@ public class HomeCache {
 
         Type type = new TypeToken<List<Ingredient>>() {}.getType();
         return new Gson().fromJson(json, type);
+    }
+
+    public static boolean hasIngredients(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        long savedTime = prefs.getLong(KEY_INGREDIENTS_TIME, 0);
+        long now = System.currentTimeMillis();
+        return (now - savedTime <= TTL) && prefs.contains(KEY_INGREDIENTS);
+    }
+
+    public static boolean hasFamilies(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        long savedTime = prefs.getLong(KEY_FAMILIES_TIME, 0);
+        long now = System.currentTimeMillis();
+        return (now - savedTime <= TTL) && prefs.contains(KEY_FAMILIES);
     }
 
     public static void clear(Context context) {

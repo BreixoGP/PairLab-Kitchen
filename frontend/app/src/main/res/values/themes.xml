@@ -1,12 +1,10 @@
 <resources>
 
-    <!-- TEMA PRINCIPAL -->
     <style name="Theme.FPappfront" parent="Theme.Material3.DayNight.NoActionBar">
 
 
         <item name="android:windowBackground">@drawable/splash_background</item>
 
-        <!-- COLORES -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
 
@@ -39,7 +37,6 @@
         parent="Theme.Material3.DayNight.NoActionBar">
 
         <item name="android:windowBackground">@color/md_theme_background</item>
-        <!-- COLORES -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
 

@@ -3,7 +3,7 @@ package com.example.fpappfront.ui.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView; // Importante añadir el import
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +18,16 @@ import java.util.List;
 public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHolder> {
 
     private List<Combo> combos = new ArrayList<>();
+
+    public interface OnComboClickListener {
+        void onComboClick(List<String> ingredientsInCombo);
+    }
+
+    private OnComboClickListener clickListener;
+
+    public void setOnComboClickListener(OnComboClickListener listener) {
+        this.clickListener = listener;
+    }
 
     public void setData(List<Combo> newData) {
         combos = newData;
@@ -45,14 +55,20 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
         }
 
         holder.tvCombo.setText(comboText.toString());
-
-        // Retocado: Dejamos solo el número para que luzca limpio en el badge flotante
         holder.tvScore.setText(String.valueOf(combo.score));
 
-        // PREPARADO: El efecto clic ya se dibuja solo gracias al XML,
-        // pero aquí es donde capturarás la acción para abrir el BottomSheet en el futuro.
         holder.itemView.setOnClickListener(v -> {
-            // Log.d("ComboClick", "Pulsado combo: " + comboText.toString());
+            if (clickListener != null && combo.combo != null) {
+                List<String> ingredientNames = new ArrayList<>();
+
+
+                for (int i = 0; i < combo.combo.size(); i++) {
+                    ingredientNames.add(combo.combo.get(i).name.toLowerCase());
+                }
+
+
+                clickListener.onComboClick(ingredientNames);
+            }
         });
     }
 
@@ -71,7 +87,7 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
             super(itemView);
             tvCombo = itemView.findViewById(R.id.tvCombo);
             tvScore = itemView.findViewById(R.id.tvScore);
-            ivComboIcon = itemView.findViewById(R.id.ivComboIcon); // Enlazado
+            ivComboIcon = itemView.findViewById(R.id.ivComboIcon);
         }
     }
 }

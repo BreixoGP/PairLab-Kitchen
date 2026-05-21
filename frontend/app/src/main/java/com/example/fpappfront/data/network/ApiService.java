@@ -6,6 +6,8 @@ import com.example.fpappfront.data.model.LoginRequest;
 import com.example.fpappfront.data.model.LoginResponse;
 import com.example.fpappfront.data.model.PairingRequest;
 import com.example.fpappfront.data.model.PairingResponse;
+import com.example.fpappfront.data.model.RecipeRequest;
+import com.example.fpappfront.data.model.RecipeResponse;
 import com.example.fpappfront.data.model.RegisterRequest;
 import com.example.fpappfront.data.model.UserResponse;
 import com.example.fpappfront.data.model.UpdateUserRequest;
@@ -65,5 +67,11 @@ public interface ApiService {
     Call<PairingResponse> getPairings(
             @Header("Authorization") String token,
             @Body PairingRequest request
+    );
+
+    @POST("api/pairings/recipe/")
+    Call<RecipeResponse> getAiRecipe(
+            @Header("Authorization") String token,
+            @Body RecipeRequest request
     );
 }

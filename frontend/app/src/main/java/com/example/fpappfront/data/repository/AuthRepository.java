@@ -5,9 +5,7 @@ import com.example.fpappfront.data.model.LoginResponse;
 import com.example.fpappfront.data.model.RegisterRequest;
 import com.example.fpappfront.data.network.ApiService;
 import com.example.fpappfront.data.network.RetrofitClient;
-
 import org.json.JSONObject;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

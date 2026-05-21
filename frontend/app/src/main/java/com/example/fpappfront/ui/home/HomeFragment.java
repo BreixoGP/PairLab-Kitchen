@@ -1,11 +1,13 @@
 package com.example.fpappfront.ui.home;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,16 +26,18 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel viewModel;
-
     private AutoCompleteTextView actvIngredient, actvFamilies;
     private ChipGroup chipGroupSize;
     private RecyclerView recycler;
     private ComboAdapter adapter;
+    private AlertDialog progressDialog;
+    private TextView progressTextView;
 
     private List<Ingredient> ingredientList = new ArrayList<>();
 
@@ -44,6 +48,7 @@ public class HomeFragment extends Fragment {
     private boolean[] checkedItems;
 
     private String token;
+    private boolean isInitialLoading = false;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -63,11 +68,15 @@ public class HomeFragment extends Fragment {
                 .getSharedPreferences("auth", Context.MODE_PRIVATE)
                 .getString("token", null);
 
+        if (!HomeCache.hasIngredients(requireContext()) || !HomeCache.hasFamilies(requireContext())) {
+            isInitialLoading = true;
+            showLoadingDialog();
+        }
+
         viewModel.loadInitialData(requireContext(), token);
     }
 
     private void initViews(View view) {
-
         actvIngredient = view.findViewById(R.id.actvIngredient);
         actvFamilies = view.findViewById(R.id.actvFamilies);
         chipGroupSize = view.findViewById(R.id.chipGroupSize);
@@ -78,13 +87,18 @@ public class HomeFragment extends Fragment {
         adapter = new ComboAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
         recycler.setAdapter(adapter);
-    }
 
+        adapter.setOnComboClickListener(ingredientsInCombo -> {
+            if (token != null && !ingredientsInCombo.isEmpty()) {
+                isInitialLoading = false;
+                viewModel.generateRecipe(token, ingredientsInCombo);
+            }
+        });
+    }
 
     private void setupObservers() {
 
         viewModel.getIngredients().observe(getViewLifecycleOwner(), list -> {
-
             ingredientList = list;
 
             List<String> names = new ArrayList<>();
@@ -119,72 +133,98 @@ public class HomeFragment extends Fragment {
                     }
                 }
             });
+
+            checkInitialLoadingDataStatus();
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), loading -> {
+            if (loading != null && loading) {
+                showLoadingDialog();
+            } else {
+                hideLoadingDialog();
+            }
+        });
+
+        viewModel.getRecipeResult().observe(getViewLifecycleOwner(), recipe -> {
+            if (recipe != null) {
+                showRecipeDialog(recipe);
+            }
+        });
+
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMsg -> {
+            isInitialLoading = false;
+            if (errorMsg != null) {
+                showError(getView(), errorMsg);
+            }
         });
 
         viewModel.getFamilies().observe(getViewLifecycleOwner(), list -> {
-
             if (list == null) return;
 
             familiesArray = list.toArray(new String[0]);
             checkedItems = new boolean[list.size()];
+
+            Arrays.fill(checkedItems, true);
+            selectedFamilies.clear();
+            selectedFamilies.addAll(list);
+
+            actvFamilies.setText("All Selected");
+
+            checkInitialLoadingDataStatus();
         });
 
         viewModel.getCombos().observe(getViewLifecycleOwner(), list -> {
-            adapter.setData(list);
+            if (list == null || list.isEmpty()) {
+                adapter.setData(new ArrayList<>());
+                Snackbar.make(recycler, "No matching combos found for these filters 🍳", Snackbar.LENGTH_LONG).show();
+            } else {
+                adapter.setData(list);
+            }
         });
     }
 
-
     private void setupUI(View view) {
-
         actvFamilies.setOnClickListener(v -> showFamiliesDialog(view));
 
         setupChipSizeSelection();
 
         view.findViewById(R.id.btnSearch).setOnClickListener(v -> {
-
             ViewUtils.hideKeyboard(requireContext(), view);
 
             if (!validateInput(view)) return;
 
             int size = getSelectedSize();
 
+            List<String> familyFilterToSend = (selectedFamilies.size() == familiesArray.length || selectedFamilies.isEmpty())
+                    ? null
+                    : selectedFamilies;
+
             viewModel.loadCombos(
                     token,
                     selectedIngredientId,
                     size,
-                    selectedFamilies
+                    familyFilterToSend
             );
         });
 
         view.findViewById(R.id.btnRefresh).setOnClickListener(v -> {
-
             ViewUtils.hideKeyboard(requireContext(), view);
-
             HomeCache.clear(requireContext());
-
+            isInitialLoading = true;
+            showLoadingDialog();
             viewModel.loadInitialData(requireContext(), token);
-
             resetState();
         });
     }
 
-
     private void setupChipSizeSelection() {
-
-        chipGroupSize.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            // no necesitamos guardar estado aquí si no quieres
-        });
+        chipGroupSize.setOnCheckedStateChangeListener((group, checkedIds) -> {});
     }
 
     private int getSelectedSize() {
-
         int checkedId = chipGroupSize.getCheckedChipId();
-
         if (checkedId == View.NO_ID) return -1;
-
         Chip chip = chipGroupSize.findViewById(checkedId);
-
         try {
             return Integer.parseInt(chip.getText().toString());
         } catch (Exception e) {
@@ -193,19 +233,15 @@ public class HomeFragment extends Fragment {
     }
 
     private boolean validateInput(View view) {
-
         if (selectedIngredientId == -1) {
             showError(view, "Select an ingredient");
             return false;
         }
-
         int size = getSelectedSize();
-
         if (size < 1 || size > 4) {
             showError(view, "Select combo size");
             return false;
         }
-
         return true;
     }
 
@@ -213,9 +249,7 @@ public class HomeFragment extends Fragment {
         Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
     }
 
-
     private void showFamiliesDialog(View view) {
-
         if (familiesArray == null || familiesArray.length == 0) {
             showError(view, "Families not loaded yet");
             return;
@@ -224,30 +258,125 @@ public class HomeFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Select families");
 
-        builder.setMultiChoiceItems(familiesArray, checkedItems, (dialog, which, isChecked) -> {
+        boolean[] tempCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
 
-            if (isChecked) selectedFamilies.add(familiesArray[which]);
-            else selectedFamilies.remove(familiesArray[which]);
+        builder.setMultiChoiceItems(familiesArray, tempCheckedItems, (dialog, which, isChecked) -> {
+            tempCheckedItems[which] = isChecked;
+        });
+
+        builder.setNeutralButton("Clear All", (dialog, which) -> {
+            Arrays.fill(checkedItems, false);
+            selectedFamilies.clear();
+            actvFamilies.setText("All Selected");
         });
 
         builder.setPositiveButton("OK", (dialog, which) -> {
-            actvFamilies.setText(TextUtils.join(", ", selectedFamilies));
+            System.arraycopy(tempCheckedItems, 0, checkedItems, 0, checkedItems.length);
+
+            selectedFamilies.clear();
+            for (int i = 0; i < checkedItems.length; i++) {
+                if (checkedItems[i]) {
+                    selectedFamilies.add(familiesArray[i]);
+                }
+            }
+
+            if (selectedFamilies.isEmpty() || selectedFamilies.size() == familiesArray.length) {
+                actvFamilies.setText("All Selected");
+            } else {
+                actvFamilies.setText(TextUtils.join(", ", selectedFamilies));
+            }
         });
 
+        builder.setNegativeButton("Cancel", null);
         builder.show();
     }
 
-
     private void resetState() {
-
         selectedIngredientId = -1;
         selectedFamilies.clear();
 
         actvIngredient.setText("");
-        actvFamilies.setText("");
+
+        if (familiesArray != null) {
+            Arrays.fill(checkedItems, true);
+            selectedFamilies.addAll(Arrays.asList(familiesArray));
+        }
+        actvFamilies.setText("All Selected");
 
         chipGroupSize.clearCheck();
-
         adapter.setData(new ArrayList<>());
+    }
+
+    private void checkInitialLoadingDataStatus() {
+        if (isInitialLoading && ingredientList != null && !ingredientList.isEmpty() && familiesArray != null && familiesArray.length > 0) {
+            isInitialLoading = false;
+            hideLoadingDialog();
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void showLoadingDialog() {
+        if (progressDialog == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            android.widget.LinearLayout layout = new android.widget.LinearLayout(requireContext());
+            layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+            layout.setPadding(50, 50, 50, 50);
+            layout.setGravity(android.view.Gravity.CENTER);
+
+            android.widget.ProgressBar progressBar = new android.widget.ProgressBar(requireContext());
+            progressTextView = new android.widget.TextView(requireContext());
+            progressTextView.setPadding(0, 30, 0, 0);
+            progressTextView.setTextSize(16);
+
+            layout.addView(progressBar);
+            layout.addView(progressTextView);
+
+            builder.setView(layout);
+            builder.setCancelable(false);
+            progressDialog = builder.create();
+        }
+
+        if (isInitialLoading) {
+            progressTextView.setText("Gathering ingredients and families... 📋");
+        } else {
+            progressTextView.setText("Chefmini is cooking your recipe... \uD83D\uDD25");
+        }
+
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    private void hideLoadingDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+    private void showRecipeDialog(com.example.fpappfront.data.model.RecipeResponse recipe) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+        android.widget.TextView customTitle = new android.widget.TextView(requireContext());
+        customTitle.setText("🍳 " + recipe.title);
+        customTitle.setTextSize(20);
+        customTitle.setTypeface(null, android.graphics.Typeface.BOLD);
+        customTitle.setPadding(60, 50, 60, 20);
+        customTitle.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), android.R.color.black));
+        customTitle.setMaxLines(3);
+        customTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
+
+        builder.setCustomTitle(customTitle);
+
+        StringBuilder message = new StringBuilder();
+        message.append("📋 EXTRA INGREDIENTS:\n")
+                .append(recipe.extraIngredients)
+                .append("\n\n")
+                .append("👨‍🍳 STEPS:\n")
+                .append(recipe.steps.replace(". ", ".\n\n"));
+
+        builder.setMessage(message.toString());
+        builder.setPositiveButton("Ok ", (dialog, which) -> dialog.dismiss());
+
+        builder.show();
     }
 }
