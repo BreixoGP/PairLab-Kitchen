@@ -5,8 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from api.models import AppUser, UserSession, Ingredient
 from api.services import get_ingredient_profile, get_candidates, get_top_combos, score_pair
 
+from api.servicesIA import generate_ai_recipe
 
-@csrf_exempt
+
 @csrf_exempt
 def register(request):
 
@@ -252,6 +253,7 @@ def ingredients_list(request):
 
 	return JsonResponse({"ingredients": data}, status=200)
 
+
 @csrf_exempt
 def pairings_list(request):
 	user = authenticate_request(request)
@@ -278,7 +280,6 @@ def pairings_list(request):
 	except Ingredient.DoesNotExist:
 		return JsonResponse({"error": "Ingredient not found"}, status=404)
 
-
 	base_profile = get_ingredient_profile(base_ingredient)
 
 	candidate_profiles = get_candidates(
@@ -300,13 +301,63 @@ def pairings_list(request):
 		]
 
 		score = 1.0
+		pair_count = 0
+
 		for i, ing1 in enumerate(combo):
-			for ing2 in combo[i+1:]:
+			for ing2 in combo[i + 1:]:
 				score *= score_pair(ing1, ing2)
+				pair_count += 1
+
+		if pair_count > 0 and score > 0:
+			score = score ** (1.0 / pair_count)
+
+		score = round(score, 2)
+
+		if score < 1.0:
+			score_label = "Risky Combo"
+		elif score <= 1.5:
+			score_label = "Basic Match"
+		elif score <= 4.0:
+			score_label = "Good Match"
+		elif score <= 12.0:
+			score_label = "Excellent Match"
+		else:
+			score_label = "Perfect Match"
 
 		results.append({
 			"combo": combo_data,
-			"score": score
+			"score": score_label
 		})
 
 	return JsonResponse({"results": results}, status=200)
+
+
+@csrf_exempt
+def generate_recipe_endpoint(request):
+	user = authenticate_request(request)
+	if not user:
+		return JsonResponse({"error": "Unauthorized"}, status=401)
+
+	if request.method != "POST":
+		return JsonResponse({"error": "HTTP method not allowed"}, status=405)
+
+	try:
+		body = json.loads(request.body)
+	except json.JSONDecodeError:
+		return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+	ingredients_recibidos = body.get("ingredients", [])
+	if not ingredients_recibidos or not isinstance(ingredients_recibidos, list):
+		return JsonResponse({"error": "Invalid ingredients format"}, status=400)
+
+	valid_ingredients = Ingredient.objects.filter(name__in=ingredients_recibidos)
+	clean_ingredients = [ing.name for ing in valid_ingredients]
+
+	if len(clean_ingredients) != len(ingredients_recibidos):
+		return JsonResponse({"error": "Suspicious ingredients detected"}, status=400)
+
+	try:
+		recipe_data = generate_ai_recipe(clean_ingredients)
+		return JsonResponse(recipe_data, status=200)
+	except Exception as e:
+		return JsonResponse({"error": f"AI Generation failed: {str(e)}"}, status=500)

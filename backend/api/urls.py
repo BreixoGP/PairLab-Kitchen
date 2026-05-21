@@ -11,5 +11,6 @@ urlpatterns = [
     path('ingredients/', endpoints.ingredients_list),
     path("ingredients/families/", endpoints.ingredient_families),
     path('pairings/', endpoints.pairings_list),
+    path('pairings/recipe/', endpoints.generate_recipe_endpoint),
 
 ]

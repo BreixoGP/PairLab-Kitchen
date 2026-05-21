@@ -112,7 +112,6 @@ def generate_combos(base_profile, candidate_profiles, combo_size):
     for combo in combinations(candidate_profiles, combo_size):
         full_combo = [base_profile] + list(combo)
 
-        # Calcular scores de pares y descartar si alguno <= 0
         if all(score_pair(p1, p2) > 0 for i, p1 in enumerate(full_combo)
                for p2 in full_combo[i+1:]):
             combos.append(full_combo)

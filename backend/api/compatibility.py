@@ -7,7 +7,6 @@
 # Familias de ingredientes
 # "red_meat", "poultry", "seafood", "vegetable", "fruit",  "dairy", "pork", "herbs", "spices"
 
-# Compatibilidad de sabores (multiplicadores)
 FLAVOUR_RULES = {
     ("sweet", "salty"): 1.5,
     ("sweet", "bitter"): 0.8,
@@ -20,7 +19,6 @@ FLAVOUR_RULES = {
     ("sweet", "sour"): 1.2,
 }
 
-# Compatibilidad de aromas / sensaciones
 AROMA_RULES = {
     ("citrus", "citrus"): 1.5,
     ("herbal", "umami"): 1.3,
@@ -31,7 +29,6 @@ AROMA_RULES = {
     ("herbal", "nutty"): 1.2,
 }
 
-# Compatibilidad de familias
 FAMILY_RULES = {
     ("red_meat", "seafood"): 0.5,
     ("red_meat", "fish"): 0.5,
