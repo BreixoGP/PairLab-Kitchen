@@ -1,6 +1,8 @@
 package com.example.fpappfront.ui.home;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -50,17 +52,19 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
-        repository.getIngredients(token, new Callback<IngredientsResponse>() {
+        repository.getIngredients(token, new Callback<>() {
             @Override
-            public void onResponse(Call<IngredientsResponse> call, Response<IngredientsResponse> response) {
+            public void onResponse(@NonNull Call<IngredientsResponse> call, @NonNull Response<IngredientsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Ingredient> data = response.body().ingredients;
                     HomeCache.saveIngredients(context, data);
                     ingredients.setValue(data);
                 }
             }
+
             @Override
-            public void onFailure(Call<IngredientsResponse> call, Throwable t) {}
+            public void onFailure(@NonNull Call<IngredientsResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 
@@ -71,41 +75,45 @@ public class HomeViewModel extends ViewModel {
             return;
         }
 
-        repository.getFamilies(token, new Callback<FamiliesResponse>() {
+        repository.getFamilies(token, new Callback<>() {
             @Override
-            public void onResponse(Call<FamiliesResponse> call, Response<FamiliesResponse> response) {
+            public void onResponse(@NonNull Call<FamiliesResponse> call, @NonNull Response<FamiliesResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> data = response.body().families;
                     HomeCache.saveFamilies(context, data);
                     families.setValue(data);
                 }
             }
+
             @Override
-            public void onFailure(Call<FamiliesResponse> call, Throwable t) {}
+            public void onFailure(@NonNull Call<FamiliesResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 
     public void loadCombos(String token, int ingredientId, int comboSize, List<String> familyFilter) {
         PairingRequest request = new PairingRequest(ingredientId, comboSize, familyFilter);
 
-        repository.getPairings(token, request, new Callback<PairingResponse>() {
+        repository.getPairings(token, request, new Callback<>() {
             @Override
-            public void onResponse(Call<PairingResponse> call, Response<PairingResponse> response) {
+            public void onResponse(@NonNull Call<PairingResponse> call, @NonNull Response<PairingResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     combos.setValue(response.body().results);
                 }
             }
+
             @Override
-            public void onFailure(Call<PairingResponse> call, Throwable t) {}
+            public void onFailure(@NonNull Call<PairingResponse> call, @NonNull Throwable t) {
+            }
         });
     }
 
     public void generateRecipe(String token, List<String> ingredientNames) {
         isLoading.setValue(true);
 
-        repository.getAiRecipe(token, ingredientNames, new Callback<RecipeResponse>() {
+        repository.getAiRecipe(token, ingredientNames, new Callback<>() {
             @Override
-            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
+            public void onResponse(@NonNull Call<RecipeResponse> call, @NonNull Response<RecipeResponse> response) {
                 isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
                     recipeResult.setValue(response.body());
@@ -115,7 +123,7 @@ public class HomeViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(Call<RecipeResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<RecipeResponse> call, @NonNull Throwable t) {
                 isLoading.setValue(false);
                 errorMessage.setValue("Network error: " + t.getMessage());
             }

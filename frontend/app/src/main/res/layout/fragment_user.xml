@@ -19,7 +19,7 @@
             android:id="@+id/tvUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Username"
+            android:text="@string/username"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Edit username"/>
+            android:text="@string/edit_username"/>
 
         <LinearLayout
             android:id="@+id/layoutUsernameEdit"
@@ -41,7 +41,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New username"
+                android:hint="@string/new_username"
 
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Save changes"/>
+                android:text="@string/save_changes"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelUsername"
@@ -67,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Cancel"/>
+                android:text="@string/cancel"/>
         </LinearLayout>
 
         <com.google.android.material.textview.MaterialTextView
@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Email"
+            android:text="@string/email"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
@@ -84,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Edit email"/>
+            android:text="@string/edit_email"/>
 
         <LinearLayout
             android:id="@+id/layoutEmailEdit"
@@ -97,7 +97,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New email"
+                android:hint="@string/new_email"
 
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
@@ -116,7 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Save changes"/>
+                android:text="@string/save_changes"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelEmail"
@@ -124,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Cancel"/>
+                android:text="@string/cancel"/>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -132,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Change password"/>
+            android:text="@string/change_password"/>
 
         <LinearLayout
             android:id="@+id/layoutPasswordEdit"
@@ -145,7 +145,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Current password"
+                android:hint="@string/current_password"
 
                 app:endIconMode="password_toggle"
 
@@ -165,7 +165,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="New password"
+                android:hint="@string/new_password"
 
                 app:endIconMode="password_toggle"
 
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:hint="Confirm password"
+                android:hint="@string/confirm_password"
 
                 app:endIconMode="password_toggle"
 
@@ -206,7 +206,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Save changes"/>
+                android:text="@string/save_changes"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelPassword"
@@ -214,7 +214,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Cancel"/>
+                android:text="@string/cancel"/>
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -223,7 +223,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Logout"/>
+            android:text="@string/logout"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteAccount"
@@ -231,7 +231,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Delete account"
+            android:text="@string/delete_account"
             android:textColor="?attr/colorOnErrorContainer"
             app:backgroundTint="?attr/colorErrorContainer"
             app:iconTint="?attr/colorOnErrorContainer"/>

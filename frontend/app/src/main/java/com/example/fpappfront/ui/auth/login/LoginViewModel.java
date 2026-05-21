@@ -10,10 +10,10 @@ import com.example.fpappfront.data.repository.AuthRepository;
 
 public class LoginViewModel extends ViewModel {
 
-    private AuthRepository repository;
+    private final AuthRepository repository;
 
-    private MutableLiveData<LoginResponse> loginResult = new MutableLiveData<>();
-    private MutableLiveData<String> error = new MutableLiveData<>();
+    private final MutableLiveData<LoginResponse> loginResult = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
 
     public LoginViewModel() {
         repository = new AuthRepository();
