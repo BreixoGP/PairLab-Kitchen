@@ -1,5 +1,6 @@
 package com.example.fpappfront.ui.home;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
         this.clickListener = listener;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setData(List<Combo> newData) {
         combos = newData;
         notifyDataSetChanged();
@@ -77,7 +79,7 @@ public class ComboAdapter extends RecyclerView.Adapter<ComboAdapter.ComboViewHol
         return combos.size();
     }
 
-    static class ComboViewHolder extends RecyclerView.ViewHolder {
+    public static class ComboViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvCombo;
         TextView tvScore;

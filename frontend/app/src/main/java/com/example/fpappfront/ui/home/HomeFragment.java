@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment {
     private List<Ingredient> ingredientList = new ArrayList<>();
 
     private int selectedIngredientId = -1;
-    private List<String> selectedFamilies = new ArrayList<>();
+    private final List<String> selectedFamilies = new ArrayList<>();
 
     private String[] familiesArray;
     private boolean[] checkedItems;
@@ -168,7 +168,7 @@ public class HomeFragment extends Fragment {
             selectedFamilies.clear();
             selectedFamilies.addAll(list);
 
-            actvFamilies.setText("All Selected");
+            actvFamilies.setText(getString(R.string.all_selected));
 
             checkInitialLoadingDataStatus();
         });
@@ -260,14 +260,12 @@ public class HomeFragment extends Fragment {
 
         boolean[] tempCheckedItems = Arrays.copyOf(checkedItems, checkedItems.length);
 
-        builder.setMultiChoiceItems(familiesArray, tempCheckedItems, (dialog, which, isChecked) -> {
-            tempCheckedItems[which] = isChecked;
-        });
+        builder.setMultiChoiceItems(familiesArray, tempCheckedItems, (dialog, which, isChecked) -> tempCheckedItems[which] = isChecked);
 
         builder.setNeutralButton("Clear All", (dialog, which) -> {
             Arrays.fill(checkedItems, false);
             selectedFamilies.clear();
-            actvFamilies.setText("All Selected");
+            actvFamilies.setText(getString(R.string.all_selected));
         });
 
         builder.setPositiveButton("OK", (dialog, which) -> {
@@ -281,7 +279,7 @@ public class HomeFragment extends Fragment {
             }
 
             if (selectedFamilies.isEmpty() || selectedFamilies.size() == familiesArray.length) {
-                actvFamilies.setText("All Selected");
+                actvFamilies.setText(getString(R.string.all_selected));
             } else {
                 actvFamilies.setText(TextUtils.join(", ", selectedFamilies));
             }
@@ -301,7 +299,7 @@ public class HomeFragment extends Fragment {
             Arrays.fill(checkedItems, true);
             selectedFamilies.addAll(Arrays.asList(familiesArray));
         }
-        actvFamilies.setText("All Selected");
+        actvFamilies.setText(getString(R.string.all_selected));
 
         chipGroupSize.clearCheck();
         adapter.setData(new ArrayList<>());
@@ -357,7 +355,7 @@ public class HomeFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
         android.widget.TextView customTitle = new android.widget.TextView(requireContext());
-        customTitle.setText("🍳 " + recipe.title);
+        customTitle.setText(getString(R.string.recipe_title_format, recipe.title));
         customTitle.setTextSize(20);
         customTitle.setTypeface(null, android.graphics.Typeface.BOLD);
         customTitle.setPadding(60, 50, 60, 20);
@@ -367,14 +365,13 @@ public class HomeFragment extends Fragment {
 
         builder.setCustomTitle(customTitle);
 
-        StringBuilder message = new StringBuilder();
-        message.append("📋 EXTRA INGREDIENTS:\n")
-                .append(recipe.extraIngredients)
-                .append("\n\n")
-                .append("👨‍🍳 STEPS:\n")
-                .append(recipe.steps.replace(". ", ".\n\n"));
+        String message = "📋 EXTRA INGREDIENTS:\n" +
+                recipe.extraIngredients +
+                "\n\n" +
+                "👨‍🍳 STEPS:\n" +
+                recipe.steps.replace(". ", ".\n\n");
 
-        builder.setMessage(message.toString());
+        builder.setMessage(message);
         builder.setPositiveButton("Ok ", (dialog, which) -> dialog.dismiss());
 
         builder.show();

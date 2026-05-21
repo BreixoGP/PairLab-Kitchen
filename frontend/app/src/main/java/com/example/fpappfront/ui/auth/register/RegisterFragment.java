@@ -76,10 +76,10 @@ public class RegisterFragment extends Fragment {
 
     private void attemptRegister(View view) {
 
-        String user = etUsername.getText().toString();
-        String email = etEmail.getText().toString();
-        String pass = etPassword.getText().toString();
-        String confirm = etConfirmPassword.getText().toString();
+        String user = String.valueOf(etUsername.getText());
+        String email = String.valueOf(etEmail.getText());
+        String pass = String.valueOf(etPassword.getText());
+        String confirm = String.valueOf(etConfirmPassword.getText());
 
         ViewUtils.clearErrors(
                 tilUsername,

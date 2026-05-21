@@ -3,6 +3,7 @@ package com.example.fpappfront.ui.auth.login;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -71,8 +72,8 @@ public class LoginFragment extends Fragment {
 
     private void attemptLogin(View view) {
 
-        String user = etUsername.getText().toString();
-        String pass = etPassword.getText().toString();
+        String user = String.valueOf(etUsername.getText());
+        String pass = String.valueOf(etPassword.getText());
 
         ViewUtils.clearErrors(tilUsername, tilPassword);
 

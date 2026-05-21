@@ -160,10 +160,7 @@ public class UserFragment extends Fragment {
                         ).show();
                     }
                 });
-        viewModel.getMessage().observe(getViewLifecycleOwner(), msg -> {
-
-            handleError(msg, view);
-        });
+        viewModel.getMessage().observe(getViewLifecycleOwner(), msg -> handleError(msg, view));
     }
 
     private void setupListeners(View view) {
@@ -282,56 +279,47 @@ public class UserFragment extends Fragment {
 
     private void setupLogout(View view) {
 
-        btnLogout.setOnClickListener(v -> {
+        btnLogout.setOnClickListener(v -> viewModel.logout(token, () -> {
 
-            viewModel.logout(token, () -> {
+            requireContext()
+                    .getSharedPreferences(
+                            "auth",
+                            Context.MODE_PRIVATE
+                    )
+                    .edit()
+                    .clear()
+                    .apply();
 
-                requireContext()
-                        .getSharedPreferences(
-                                "auth",
-                                Context.MODE_PRIVATE
-                        )
-                        .edit()
-                        .clear()
-                        .apply();
-
-                Navigation.findNavController(view)
-                        .navigate(R.id.action_user_to_login);
-            });
-        });
+            Navigation.findNavController(view)
+                    .navigate(R.id.action_user_to_login);
+        }));
     }
 
     private void setupDeleteAccount(View view) {
 
-        btnDeleteAccount.setOnClickListener(v -> {
+        btnDeleteAccount.setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Delete account")
+                .setMessage("This action cannot be undone.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete",
+                        (dialog, which) -> viewModel.deleteUser(
+                                userId,
+                                token,
+                                () -> {
 
-            new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Delete account")
-                    .setMessage("This action cannot be undone.")
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton("Delete",
-                            (dialog, which) -> {
+                                    requireContext()
+                                            .getSharedPreferences(
+                                                    "auth",
+                                                    Context.MODE_PRIVATE
+                                            )
+                                            .edit()
+                                            .clear()
+                                            .apply();
 
-                                viewModel.deleteUser(
-                                        userId,
-                                        token,
-                                        () -> {
-
-                                            requireContext()
-                                                    .getSharedPreferences(
-                                                            "auth",
-                                                            Context.MODE_PRIVATE
-                                                    )
-                                                    .edit()
-                                                    .clear()
-                                                    .apply();
-
-                                            Navigation.findNavController(view)
-                                                    .navigate(R.id.action_user_to_login);
-                                        });
-                            })
-                    .show();
-        });
+                                    Navigation.findNavController(view)
+                                            .navigate(R.id.action_user_to_login);
+                                }))
+                .show());
     }
     private void handleError(String msg, View view) {
 

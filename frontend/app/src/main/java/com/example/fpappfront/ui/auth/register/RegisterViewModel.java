@@ -7,10 +7,10 @@ import com.example.fpappfront.data.repository.AuthRepository;
 
 public class RegisterViewModel extends ViewModel {
 
-    private AuthRepository repository;
+    private final AuthRepository repository;
 
-    private MutableLiveData<Boolean> registerResult = new MutableLiveData<>();
-    private MutableLiveData<String> error = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> registerResult = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
 
     public RegisterViewModel() {
         repository = new AuthRepository();

@@ -14,7 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             throw new IllegalStateException("NavHostFragment not found");
         }
 
-        navController = navHostFragment.getNavController();
+        NavController navController = navHostFragment.getNavController();
 
         NavigationUI.setupWithNavController(bottomNav, navController);
 
