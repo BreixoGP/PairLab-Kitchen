@@ -1,9 +1,10 @@
 import json
+import os
 from google import genai
 from google.genai import types
 
-client = genai.Client(api_key="TU_API_KEY")
-
+api_key = os.environ.get("GEMINI_API_KEY", "AQUÍ_TU_API_KEY_REAL_DE_GEMINI")
+client = genai.Client(api_key=api_key)
 
 def generate_ai_recipe(ingredients_list):
     """
