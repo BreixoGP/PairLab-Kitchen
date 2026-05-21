@@ -69,7 +69,7 @@ public interface ApiService {
             @Body PairingRequest request
     );
 
-    @POST("api/pairings/recipe/")
+    @POST("/api/pairings/recipe/")
     Call<RecipeResponse> getAiRecipe(
             @Header("Authorization") String token,
             @Body RecipeRequest request
