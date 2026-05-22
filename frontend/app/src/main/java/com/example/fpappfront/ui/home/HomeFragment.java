@@ -31,6 +31,10 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    private enum LoadingType {
+        INITIAL, COMBOS, RECIPE
+    }
+
     private HomeViewModel viewModel;
     private AutoCompleteTextView actvIngredient, actvFamilies;
     private ChipGroup chipGroupSize;
@@ -48,7 +52,7 @@ public class HomeFragment extends Fragment {
     private boolean[] checkedItems;
 
     private String token;
-    private boolean isInitialLoading = false;
+    private LoadingType currentLoadingType = LoadingType.INITIAL;
 
     public HomeFragment() {
         super(R.layout.fragment_home);
@@ -56,7 +60,6 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         initViews(view);
@@ -69,7 +72,7 @@ public class HomeFragment extends Fragment {
                 .getString("token", null);
 
         if (!HomeCache.hasIngredients(requireContext()) || !HomeCache.hasFamilies(requireContext())) {
-            isInitialLoading = true;
+            currentLoadingType = LoadingType.INITIAL;
             showLoadingDialog();
         }
 
@@ -90,14 +93,13 @@ public class HomeFragment extends Fragment {
 
         adapter.setOnComboClickListener(ingredientsInCombo -> {
             if (token != null && !ingredientsInCombo.isEmpty()) {
-                isInitialLoading = false;
+                currentLoadingType = LoadingType.RECIPE;
                 viewModel.generateRecipe(token, ingredientsInCombo);
             }
         });
     }
 
     private void setupObservers() {
-
         viewModel.getIngredients().observe(getViewLifecycleOwner(), list -> {
             ingredientList = list;
 
@@ -152,7 +154,6 @@ public class HomeFragment extends Fragment {
         });
 
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMsg -> {
-            isInitialLoading = false;
             if (errorMsg != null) {
                 showError(getView(), errorMsg);
             }
@@ -199,6 +200,7 @@ public class HomeFragment extends Fragment {
                     ? null
                     : selectedFamilies;
 
+            currentLoadingType = LoadingType.COMBOS;
             viewModel.loadCombos(
                     token,
                     selectedIngredientId,
@@ -210,7 +212,7 @@ public class HomeFragment extends Fragment {
         view.findViewById(R.id.btnRefresh).setOnClickListener(v -> {
             ViewUtils.hideKeyboard(requireContext(), view);
             HomeCache.clear(requireContext());
-            isInitialLoading = true;
+            currentLoadingType = LoadingType.INITIAL;
             showLoadingDialog();
             viewModel.loadInitialData(requireContext(), token);
             resetState();
@@ -306,8 +308,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkInitialLoadingDataStatus() {
-        if (isInitialLoading && ingredientList != null && !ingredientList.isEmpty() && familiesArray != null && familiesArray.length > 0) {
-            isInitialLoading = false;
+        if (currentLoadingType == LoadingType.INITIAL && ingredientList != null && !ingredientList.isEmpty() && familiesArray != null && familiesArray.length > 0) {
             hideLoadingDialog();
         }
     }
@@ -334,10 +335,12 @@ public class HomeFragment extends Fragment {
             progressDialog = builder.create();
         }
 
-        if (isInitialLoading) {
-            progressTextView.setText("Gathering ingredients and families... 📋");
+        if (currentLoadingType == LoadingType.INITIAL) {
+            progressTextView.setText(getString(R.string.gathering_ingredients));
+        } else if (currentLoadingType == LoadingType.COMBOS) {
+            progressTextView.setText(getString(R.string.searching_combos));
         } else {
-            progressTextView.setText("Chefmini is cooking your recipe... \uD83D\uDD25");
+            progressTextView.setText(getString(R.string.chefmini_cooking));
         }
 
         if (!progressDialog.isShowing()) {
@@ -364,11 +367,10 @@ public class HomeFragment extends Fragment {
         customTitle.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
         builder.setCustomTitle(customTitle);
-
-        String message = "📋 EXTRA INGREDIENTS:\n" +
+        String message = getString(R.string.extra_ingredients) + "\n" +
                 recipe.extraIngredients +
                 "\n\n" +
-                "👨‍🍳 STEPS:\n" +
+                getString(R.string.steps) + "\n" +
                 recipe.steps.replace(". ", ".\n\n");
 
         builder.setMessage(message);

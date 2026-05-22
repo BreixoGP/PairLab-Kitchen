@@ -43,5 +43,11 @@
     <string name="chefmini_cooking">Chefmini is cooking your recipe… 🔥</string>
     <string name="recipe_title_format">🍳 %1$s</string>
     <string name="combo_match_format">%1$s Match</string>
+    <string name="gathering_ingredients">Gathering ingredients and families… 📋</string>
+    <string name="searching_combos">Searching matching combos… 🔍</string>
+    <string name="extra_ingredients">📋 EXTRA INGREDIENTS:</string>
+    <string name="steps">👨‍🍳 STEPS:</string>
+    <string name="ok">OK</string>
+
 
 </resources>

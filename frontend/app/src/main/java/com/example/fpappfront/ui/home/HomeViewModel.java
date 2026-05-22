@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.fpappfront.data.cache.HomeCache;
 import com.example.fpappfront.data.model.Combo;
+import com.example.fpappfront.data.model.ComboItem;
 import com.example.fpappfront.data.model.FamiliesResponse;
 import com.example.fpappfront.data.model.Ingredient;
 import com.example.fpappfront.data.model.IngredientsResponse;
@@ -17,6 +18,7 @@ import com.example.fpappfront.data.model.PairingResponse;
 import com.example.fpappfront.data.model.RecipeResponse;
 import com.example.fpappfront.data.repository.HomeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,9 +47,25 @@ public class HomeViewModel extends ViewModel {
         loadFamilies(context, token);
     }
 
+    private String formatLabel(String rawValue) {
+        if (rawValue == null || rawValue.isEmpty()) return "";
+        String spaced = rawValue.replace("_", " ");
+        return spaced.substring(0, 1).toUpperCase() + spaced.substring(1).toLowerCase();
+    }
+
+    private String unformatLabel(String prettyValue) {
+        if (prettyValue == null || prettyValue.isEmpty()) return "";
+        return prettyValue.toLowerCase().replace(" ", "_");
+    }
+
     private void loadIngredients(Context context, String token) {
         List<Ingredient> cached = HomeCache.getIngredients(context);
         if (cached != null) {
+            for (Ingredient ing : cached) {
+                if (ing.name != null) {
+                    ing.name = formatLabel(ing.name);
+                }
+            }
             ingredients.setValue(cached);
             return;
         }
@@ -57,6 +75,11 @@ public class HomeViewModel extends ViewModel {
             public void onResponse(@NonNull Call<IngredientsResponse> call, @NonNull Response<IngredientsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Ingredient> data = response.body().ingredients;
+                    for (Ingredient ing : data) {
+                        if (ing.name != null) {
+                            ing.name = formatLabel(ing.name);
+                        }
+                    }
                     HomeCache.saveIngredients(context, data);
                     ingredients.setValue(data);
                 }
@@ -71,7 +94,11 @@ public class HomeViewModel extends ViewModel {
     private void loadFamilies(Context context, String token) {
         List<String> cached = HomeCache.getFamilies(context);
         if (cached != null) {
-            families.setValue(cached);
+            List<String> formattedCached = new ArrayList<>();
+            for (String fam : cached) {
+                formattedCached.add(formatLabel(fam));
+            }
+            families.setValue(formattedCached);
             return;
         }
 
@@ -79,9 +106,13 @@ public class HomeViewModel extends ViewModel {
             @Override
             public void onResponse(@NonNull Call<FamiliesResponse> call, @NonNull Response<FamiliesResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<String> data = response.body().families;
-                    HomeCache.saveFamilies(context, data);
-                    families.setValue(data);
+                    List<String> rawFamilies = response.body().families;
+                    List<String> formattedFamilies = new ArrayList<>();
+                    for (String fam : rawFamilies) {
+                        formattedFamilies.add(formatLabel(fam));
+                    }
+                    HomeCache.saveFamilies(context, formattedFamilies);
+                    families.setValue(formattedFamilies);
                 }
             }
 
@@ -92,18 +123,43 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void loadCombos(String token, int ingredientId, int comboSize, List<String> familyFilter) {
-        PairingRequest request = new PairingRequest(ingredientId, comboSize, familyFilter);
+        isLoading.setValue(true);
+
+        List<String> rawFamilyFilter = new ArrayList<>();
+        if (familyFilter != null) {
+            for (String fam : familyFilter) {
+                rawFamilyFilter.add(unformatLabel(fam));
+            }
+        }
+
+        PairingRequest request = new PairingRequest(ingredientId, comboSize, rawFamilyFilter);
 
         repository.getPairings(token, request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<PairingResponse> call, @NonNull Response<PairingResponse> response) {
+                isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    combos.setValue(response.body().results);
+                    List<Combo> results = response.body().results;
+
+                    if (results != null) {
+                        for (Combo comboObj : results) {
+                            if (comboObj.combo != null) {
+                                for (ComboItem item : comboObj.combo) {
+                                    if (item.name != null) {
+                                        item.name = formatLabel(item.name);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    combos.setValue(results);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<PairingResponse> call, @NonNull Throwable t) {
+                isLoading.setValue(false);
             }
         });
     }
@@ -111,7 +167,14 @@ public class HomeViewModel extends ViewModel {
     public void generateRecipe(String token, List<String> ingredientNames) {
         isLoading.setValue(true);
 
-        repository.getAiRecipe(token, ingredientNames, new Callback<>() {
+        List<String> rawIngredientNames = new ArrayList<>();
+        if (ingredientNames != null) {
+            for (String name : ingredientNames) {
+                rawIngredientNames.add(unformatLabel(name));
+            }
+        }
+
+        repository.getAiRecipe(token, rawIngredientNames, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<RecipeResponse> call, @NonNull Response<RecipeResponse> response) {
                 isLoading.setValue(false);

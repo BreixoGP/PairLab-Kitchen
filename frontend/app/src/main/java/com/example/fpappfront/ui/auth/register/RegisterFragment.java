@@ -1,6 +1,9 @@
 package com.example.fpappfront.ui.auth.register;
+
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,7 +25,7 @@ public class RegisterFragment extends Fragment {
     private TextInputLayout tilUsername, tilEmail, tilPassword, tilConfirmPassword;
 
     private MaterialButton btnRegister, btnBackToLogin;
-
+    private ProgressBar progressBar;
 
     public RegisterFragment() {
         super(R.layout.fragment_register);
@@ -40,7 +43,6 @@ public class RegisterFragment extends Fragment {
     }
 
     private void initViews(View view) {
-
         etUsername = view.findViewById(R.id.etUsername);
         etEmail = view.findViewById(R.id.etEmail);
         etPassword = view.findViewById(R.id.etPassword);
@@ -53,10 +55,10 @@ public class RegisterFragment extends Fragment {
 
         btnRegister = view.findViewById(R.id.btnRegister);
         btnBackToLogin = view.findViewById(R.id.btnBackToLogin);
+        progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupListeners(View view) {
-
         btnRegister.setOnClickListener(v -> attemptRegister(view));
         btnBackToLogin.setOnClickListener(v ->
                 Navigation.findNavController(view)
@@ -75,7 +77,6 @@ public class RegisterFragment extends Fragment {
     }
 
     private void attemptRegister(View view) {
-
         String user = String.valueOf(etUsername.getText());
         String email = String.valueOf(etEmail.getText());
         String pass = String.valueOf(etPassword.getText());
@@ -121,9 +122,21 @@ public class RegisterFragment extends Fragment {
     }
 
     private void observeViewModel(View view) {
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                if (isLoading) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    btnRegister.setEnabled(false);
+                    btnBackToLogin.setEnabled(false);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    btnRegister.setEnabled(true);
+                    btnBackToLogin.setEnabled(true);
+                }
+            }
+        });
 
         viewModel.getRegisterResult().observe(getViewLifecycleOwner(), res -> {
-
             Snackbar.make(
                     view,
                     getString(R.string.register_success),
@@ -135,7 +148,6 @@ public class RegisterFragment extends Fragment {
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), err -> {
-
             if (err == null) return;
 
             if (err.toLowerCase().contains("username")) {
